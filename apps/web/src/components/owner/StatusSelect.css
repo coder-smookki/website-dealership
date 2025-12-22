@@ -1,0 +1,27 @@
+.status-select {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  background: #ffffff;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.status-select:hover {
+  border-color: #1a1a1a;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+}
+
+.status-select option {
+  padding: 8px;
+}

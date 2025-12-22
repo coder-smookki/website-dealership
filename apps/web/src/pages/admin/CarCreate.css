@@ -1,0 +1,16 @@
+.car-create {
+  padding: 40px 20px;
+  min-height: 80vh;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.car-create h1 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #333;
+}
+

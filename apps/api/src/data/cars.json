@@ -1,0 +1,1481 @@
+[
+  {
+    "title": "Rolls-Royce Ghost 2023",
+    "brand": "Rolls-Royce",
+    "model": "Ghost",
+    "year": 2023,
+    "mileage": 1200,
+    "price": 35000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "6.75 л V12",
+    "powerHp": 563,
+    "color": "Черный",
+    "description": "Эксклюзивный Rolls-Royce Ghost в идеальном состоянии. Полная комплектация, все опции. Один владелец, сервисная книжка.",
+    "features": [
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Адаптивный круиз-контроль",
+      "Система ночного видения",
+      "Массаж сидений",
+      "Камера заднего вида"
+    ],
+    "images": [
+      "/Rolls-Royce.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz S-Class 2024",
+    "brand": "Mercedes-Benz",
+    "model": "S-Class",
+    "year": 2024,
+    "mileage": 500,
+    "price": 12000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л V6",
+    "powerHp": 435,
+    "color": "Белый",
+    "description": "Новый Mercedes-Benz S-Class с полным пакетом опций. Технологии последнего поколения, комфорт премиум класса.",
+    "features": [
+      "MBUX система",
+      "Массаж сидений",
+      "Панорамная крыша",
+      "Беспроводная зарядка",
+      "Система безопасности",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW 7 Series 2023",
+    "brand": "BMW",
+    "model": "7 Series",
+    "year": 2023,
+    "mileage": 8500,
+    "price": 10500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.4 л V8",
+    "powerHp": 530,
+    "color": "Серый",
+    "description": "BMW 7 Series в отличном состоянии. Динамика и комфорт в одном автомобиле. Все документы в порядке.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Хрустальные элементы",
+      "Массаж сидений",
+      "Harman Kardon"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi A8 2023",
+    "brand": "Audi",
+    "model": "A8",
+    "year": 2023,
+    "mileage": 6200,
+    "price": 9800000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л V6",
+    "powerHp": 340,
+    "color": "Черный",
+    "description": "Audi A8 с полным пакетом опций. Премиум комфорт и технологии. Идеальное состояние.",
+    "features": [
+      "Virtual Cockpit",
+      "Массаж сидений",
+      "Панорамная крыша",
+      "Matrix LED",
+      "Bang & Olufsen",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche Panamera Turbo 2022",
+    "brand": "Porsche",
+    "model": "Panamera",
+    "year": 2022,
+    "mileage": 15000,
+    "price": 15000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 630,
+    "color": "Красный",
+    "description": "Porsche Panamera Turbo - спорт и комфорт. Мощный двигатель, отличная динамика. Все опции.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Адаптивная подвеска",
+      "Bose звук",
+      "Спортивные сиденья"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Bentley Continental GT 2023",
+    "brand": "Bentley",
+    "model": "Continental GT",
+    "year": 2023,
+    "mileage": 3200,
+    "price": 22000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "6.0 л W12",
+    "powerHp": 635,
+    "color": "Синий",
+    "description": "Роскошный Bentley Continental GT. Ручная сборка, премиум материалы. Эксклюзивная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Naim звук",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Bentley.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Lexus LS 500 2023",
+    "brand": "Lexus",
+    "model": "LS",
+    "year": 2023,
+    "mileage": 7800,
+    "price": 8500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "3.5 л V6",
+    "powerHp": 422,
+    "color": "Белый",
+    "description": "Lexus LS 500 - японское качество и комфорт. Тихая работа, плавный ход. Все опции.",
+    "features": [
+      "Mark Levinson",
+      "Массаж сидений",
+      "Панорамная крыша",
+      "Адаптивная подвеска",
+      "Система безопасности",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/Lexus.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Tesla Model S Plaid 2023",
+    "brand": "Tesla",
+    "model": "Model S",
+    "year": 2023,
+    "mileage": 12000,
+    "price": 11000000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 1020,
+    "color": "Белый",
+    "description": "Tesla Model S Plaid - будущее уже здесь. Рекордная динамика, автопилот, премиум интерьер.",
+    "features": [
+      "Автопилот",
+      "Панорамная крыша",
+      "Премиум звук",
+      "Беспроводная зарядка",
+      "Игровая консоль",
+      "Биометрический доступ"
+    ],
+    "images": [
+      "/Tesla.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz G-Class 2023",
+    "brand": "Mercedes-Benz",
+    "model": "G-Class",
+    "year": 2023,
+    "mileage": 4500,
+    "price": 18000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 585,
+    "color": "Черный",
+    "description": "Легендарный Mercedes-Benz G-Class. Внедорожник премиум класса с непревзойденными характеристиками.",
+    "features": [
+      "Три дифференциала",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Burmester звук",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW X7 2023",
+    "brand": "BMW",
+    "model": "X7",
+    "year": 2023,
+    "mileage": 6800,
+    "price": 11500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.4 л V8",
+    "powerHp": 530,
+    "color": "Белый",
+    "description": "BMW X7 - флагманский внедорожник. Просторный салон, все опции, отличное состояние.",
+    "features": [
+      "7 мест",
+      "Панорамная крыша",
+      "Кожаный салон",
+      "Harman Kardon",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi Q8 2023",
+    "brand": "Audi",
+    "model": "Q8",
+    "year": 2023,
+    "mileage": 9200,
+    "price": 8800000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л V6",
+    "powerHp": 340,
+    "color": "Серый",
+    "description": "Audi Q8 - стильный внедорожник премиум класса. Динамика и комфорт в одном автомобиле.",
+    "features": [
+      "Virtual Cockpit",
+      "Панорамная крыша",
+      "Matrix LED",
+      "Bang & Olufsen",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche Cayenne Turbo 2023",
+    "brand": "Porsche",
+    "model": "Cayenne",
+    "year": 2023,
+    "mileage": 11000,
+    "price": 12500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 550,
+    "color": "Черный",
+    "description": "Porsche Cayenne Turbo - спортивный внедорожник. Мощный двигатель, отличная динамика.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивные сиденья"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Rolls-Royce Cullinan 2023",
+    "brand": "Rolls-Royce",
+    "model": "Cullinan",
+    "year": 2023,
+    "mileage": 2500,
+    "price": 42000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "6.75 л V12",
+    "powerHp": 563,
+    "color": "Белый",
+    "description": "Эксклюзивный Rolls-Royce Cullinan. Самый роскошный внедорожник в мире. Полная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Система ночного видения",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/Rolls-Royce.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz E-Class 2024",
+    "brand": "Mercedes-Benz",
+    "model": "E-Class",
+    "year": 2024,
+    "mileage": 300,
+    "price": 6500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "2.0 л I4",
+    "powerHp": 258,
+    "color": "Серый",
+    "description": "Новый Mercedes-Benz E-Class. Бизнес-класс с премиум опциями. Идеальное состояние.",
+    "features": [
+      "MBUX система",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Беспроводная зарядка",
+      "Система безопасности",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW 5 Series 2023",
+    "brand": "BMW",
+    "model": "5 Series",
+    "year": 2023,
+    "mileage": 15000,
+    "price": 5800000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "3.0 л I6",
+    "powerHp": 340,
+    "color": "Черный",
+    "description": "BMW 5 Series в отличном состоянии. Динамика и комфорт. Все документы в порядке.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Harman Kardon",
+      "Массаж сидений",
+      "Камера заднего вида"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi A6 2023",
+    "brand": "Audi",
+    "model": "A6",
+    "year": 2023,
+    "mileage": 18000,
+    "price": 5200000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л V6",
+    "powerHp": 340,
+    "color": "Белый",
+    "description": "Audi A6 с полным пакетом опций. Премиум комфорт и технологии. Отличное состояние.",
+    "features": [
+      "Virtual Cockpit",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Matrix LED",
+      "Bang & Olufsen",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche 911 Carrera 2023",
+    "brand": "Porsche",
+    "model": "911",
+    "year": 2023,
+    "mileage": 8500,
+    "price": 13500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "3.0 л H6",
+    "powerHp": 385,
+    "color": "Красный",
+    "description": "Легендарный Porsche 911 Carrera. Спортивная динамика, премиум интерьер. Все опции.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Bentley Flying Spur 2023",
+    "brand": "Bentley",
+    "model": "Flying Spur",
+    "year": 2023,
+    "mileage": 4200,
+    "price": 25000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "6.0 л W12",
+    "powerHp": 635,
+    "color": "Черный",
+    "description": "Роскошный Bentley Flying Spur. Ручная сборка, премиум материалы. Эксклюзивная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Naim звук",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Bentley.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Lexus RX 450h 2023",
+    "brand": "Lexus",
+    "model": "RX",
+    "year": 2023,
+    "mileage": 14000,
+    "price": 6800000,
+    "currency": "RUB",
+    "fuelType": "Гибрид",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.5 л V6 + электромотор",
+    "powerHp": 308,
+    "color": "Серый",
+    "description": "Lexus RX 450h - гибридный внедорожник. Экономичность и комфорт. Все опции.",
+    "features": [
+      "Mark Levinson",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Адаптивная подвеска",
+      "Система безопасности",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/Lexus.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Tesla Model X 2023",
+    "brand": "Tesla",
+    "model": "Model X",
+    "year": 2023,
+    "mileage": 16000,
+    "price": 12500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 1020,
+    "color": "Черный",
+    "description": "Tesla Model X - электрический внедорожник. Автопилот, 7 мест, футуристичный дизайн.",
+    "features": [
+      "Автопилот",
+      "Панорамная крыша",
+      "Премиум звук",
+      "Беспроводная зарядка",
+      "Игровая консоль",
+      "Биометрический доступ"
+    ],
+    "images": [
+      "/Tesla.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz AMG GT 2023",
+    "brand": "Mercedes-Benz",
+    "model": "AMG GT",
+    "year": 2023,
+    "mileage": 6000,
+    "price": 16500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "4.0 л V8",
+    "powerHp": 523,
+    "color": "Серебристый",
+    "description": "Mercedes-Benz AMG GT - спортивный автомобиль. Мощный двигатель, отличная динамика.",
+    "features": [
+      "AMG Performance",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Burmester звук",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW M5 2023",
+    "brand": "BMW",
+    "model": "M5",
+    "year": 2023,
+    "mileage": 11000,
+    "price": 12800000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.4 л V8",
+    "powerHp": 625,
+    "color": "Синий",
+    "description": "BMW M5 - спортивный седан. Мощный двигатель, отличная динамика. Все опции M Performance.",
+    "features": [
+      "M Performance",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Harman Kardon",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi RS6 2023",
+    "brand": "Audi",
+    "model": "RS6",
+    "year": 2023,
+    "mileage": 9500,
+    "price": 13200000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 600,
+    "color": "Серый",
+    "description": "Audi RS6 - спортивный универсал. Мощный двигатель, отличная динамика. Все опции RS.",
+    "features": [
+      "RS Performance",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Bang & Olufsen",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche Macan Turbo 2023",
+    "brand": "Porsche",
+    "model": "Macan",
+    "year": 2023,
+    "mileage": 13000,
+    "price": 9800000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "2.9 л V6",
+    "powerHp": 440,
+    "color": "Белый",
+    "description": "Porsche Macan Turbo - компактный спортивный внедорожник. Динамика и практичность.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивные сиденья"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz CLS 2023",
+    "brand": "Mercedes-Benz",
+    "model": "CLS",
+    "year": 2023,
+    "mileage": 17000,
+    "price": 7200000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "3.0 л V6",
+    "powerHp": 367,
+    "color": "Черный",
+    "description": "Mercedes-Benz CLS - стильный купе-седан. Элегантный дизайн, премиум комфорт.",
+    "features": [
+      "MBUX система",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Burmester звук",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW X5 2023",
+    "brand": "BMW",
+    "model": "X5",
+    "year": 2023,
+    "mileage": 12000,
+    "price": 9500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л I6",
+    "powerHp": 340,
+    "color": "Белый",
+    "description": "BMW X5 - флагманский внедорожник. Просторный салон, все опции, отличное состояние.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Harman Kardon",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi Q7 2023",
+    "brand": "Audi",
+    "model": "Q7",
+    "year": 2023,
+    "mileage": 15000,
+    "price": 8200000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л V6",
+    "powerHp": 340,
+    "color": "Серый",
+    "description": "Audi Q7 - просторный внедорожник. 7 мест, все опции, отличное состояние.",
+    "features": [
+      "Virtual Cockpit",
+      "7 мест",
+      "Панорамная крыша",
+      "Matrix LED",
+      "Bang & Olufsen",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche Taycan Turbo S 2023",
+    "brand": "Porsche",
+    "model": "Taycan",
+    "year": 2023,
+    "mileage": 8000,
+    "price": 18000000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 761,
+    "color": "Белый",
+    "description": "Porsche Taycan Turbo S - электрический спорткар. Рекордная динамика, премиум интерьер.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивные сиденья"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Bentley Bentayga 2023",
+    "brand": "Bentley",
+    "model": "Bentayga",
+    "year": 2023,
+    "mileage": 5500,
+    "price": 28000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "6.0 л W12",
+    "powerHp": 635,
+    "color": "Коричневый",
+    "description": "Роскошный Bentley Bentayga. Самый премиальный внедорожник. Ручная сборка, эксклюзивная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Naim звук",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Bentley.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Lexus LX 600 2023",
+    "brand": "Lexus",
+    "model": "LX",
+    "year": 2023,
+    "mileage": 10000,
+    "price": 12500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.5 л V6",
+    "powerHp": 409,
+    "color": "Черный",
+    "description": "Lexus LX 600 - флагманский внедорожник. Просторный салон, все опции, отличное состояние.",
+    "features": [
+      "Mark Levinson",
+      "7 мест",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Адаптивная подвеска",
+      "Система безопасности"
+    ],
+    "images": [
+      "/Lexus.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Tesla Model 3 Performance 2023",
+    "brand": "Tesla",
+    "model": "Model 3",
+    "year": 2023,
+    "mileage": 19000,
+    "price": 5500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 510,
+    "color": "Белый",
+    "description": "Tesla Model 3 Performance - электрический седан. Автопилот, отличная динамика, премиум интерьер.",
+    "features": [
+      "Автопилот",
+      "Панорамная крыша",
+      "Премиум звук",
+      "Беспроводная зарядка",
+      "Игровая консоль",
+      "Биометрический доступ"
+    ],
+    "images": [
+      "/Tesla.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz GLS 2023",
+    "brand": "Mercedes-Benz",
+    "model": "GLS",
+    "year": 2023,
+    "mileage": 11000,
+    "price": 14000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 585,
+    "color": "Белый",
+    "description": "Mercedes-Benz GLS - флагманский внедорожник. Просторный салон на 7 мест, все опции.",
+    "features": [
+      "7 мест",
+      "MBUX система",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Burmester звук",
+      "Массаж сидений"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW 8 Series 2023",
+    "brand": "BMW",
+    "model": "8 Series",
+    "year": 2023,
+    "mileage": 7000,
+    "price": 14500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "4.4 л V8",
+    "powerHp": 530,
+    "color": "Синий",
+    "description": "BMW 8 Series - роскошное купе. Элегантный дизайн, мощный двигатель, премиум интерьер.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Harman Kardon",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi A7 2023",
+    "brand": "Audi",
+    "model": "A7",
+    "year": 2023,
+    "mileage": 14000,
+    "price": 7500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.0 л V6",
+    "powerHp": 340,
+    "color": "Черный",
+    "description": "Audi A7 - стильный купе-седан. Элегантный дизайн, премиум комфорт, все опции.",
+    "features": [
+      "Virtual Cockpit",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Matrix LED",
+      "Bang & Olufsen",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche 718 Boxster 2023",
+    "brand": "Porsche",
+    "model": "718",
+    "year": 2023,
+    "mileage": 9000,
+    "price": 8500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "4.0 л H6",
+    "powerHp": 400,
+    "color": "Желтый",
+    "description": "Porsche 718 Boxster - спортивный родстер. Открытый верх, отличная динамика, премиум интерьер.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Rolls-Royce Phantom 2022",
+    "brand": "Rolls-Royce",
+    "model": "Phantom",
+    "year": 2022,
+    "mileage": 8000,
+    "price": 45000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "6.75 л V12",
+    "powerHp": 563,
+    "color": "Черный",
+    "description": "Эксклюзивный Rolls-Royce Phantom. Абсолютная роскошь, ручная сборка, эксклюзивная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Система ночного видения",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/Rolls-Royce.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz SL 63 AMG 2023",
+    "brand": "Mercedes-Benz",
+    "model": "SL",
+    "year": 2023,
+    "mileage": 5000,
+    "price": 18500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 585,
+    "color": "Серебристый",
+    "description": "Mercedes-Benz SL 63 AMG - роскошный родстер. Открытый верх, мощный двигатель, премиум интерьер.",
+    "features": [
+      "AMG Performance",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Burmester звук",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW iX 2023",
+    "brand": "BMW",
+    "model": "iX",
+    "year": 2023,
+    "mileage": 12000,
+    "price": 10500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 523,
+    "color": "Синий",
+    "description": "BMW iX - электрический внедорожник. Футуристичный дизайн, автопилот, премиум интерьер.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Harman Kardon",
+      "Массаж сидений",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi e-tron GT 2023",
+    "brand": "Audi",
+    "model": "e-tron GT",
+    "year": 2023,
+    "mileage": 7500,
+    "price": 11500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 637,
+    "color": "Серый",
+    "description": "Audi e-tron GT - электрический спорткар. Рекордная динамика, премиум интерьер, все опции.",
+    "features": [
+      "Virtual Cockpit",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Bang & Olufsen",
+      "Адаптивная подвеска",
+      "Спортивные сиденья"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche 911 Turbo S 2023",
+    "brand": "Porsche",
+    "model": "911",
+    "year": 2023,
+    "mileage": 4000,
+    "price": 19500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "3.8 л H6",
+    "powerHp": 650,
+    "color": "Серебристый",
+    "description": "Porsche 911 Turbo S - топовая версия легенды. Максимальная мощность, все опции, идеальное состояние.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Bentley Mulsanne 2022",
+    "brand": "Bentley",
+    "model": "Mulsanne",
+    "year": 2022,
+    "mileage": 12000,
+    "price": 32000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "6.75 л V8",
+    "powerHp": 537,
+    "color": "Черный",
+    "description": "Роскошный Bentley Mulsanne. Классическая элегантность, ручная сборка, эксклюзивная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Naim звук",
+      "Массаж сидений",
+      "Адаптивная подвеска"
+    ],
+    "images": [
+      "/Bentley.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Lexus ES 300h 2023",
+    "brand": "Lexus",
+    "model": "ES",
+    "year": 2023,
+    "mileage": 16000,
+    "price": 4800000,
+    "currency": "RUB",
+    "fuelType": "Гибрид",
+    "transmission": "Автомат",
+    "drive": "Передний",
+    "engine": "2.5 л I4 + электромотор",
+    "powerHp": 218,
+    "color": "Белый",
+    "description": "Lexus ES 300h - гибридный седан. Экономичность и комфорт, все опции, отличное состояние.",
+    "features": [
+      "Mark Levinson",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Адаптивная подвеска",
+      "Система безопасности",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/Lexus.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Tesla Model Y Performance 2023",
+    "brand": "Tesla",
+    "model": "Model Y",
+    "year": 2023,
+    "mileage": 18000,
+    "price": 6500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 514,
+    "color": "Белый",
+    "description": "Tesla Model Y Performance - электрический кроссовер. Автопилот, отличная динамика, практичность.",
+    "features": [
+      "Автопилот",
+      "Панорамная крыша",
+      "Премиум звук",
+      "Беспроводная зарядка",
+      "Игровая консоль",
+      "Биометрический доступ"
+    ],
+    "images": [
+      "/Tesla.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz Maybach S 680 2023",
+    "brand": "Mercedes-Benz",
+    "model": "Maybach S",
+    "year": 2023,
+    "mileage": 3000,
+    "price": 28000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "6.0 л V12",
+    "powerHp": 630,
+    "color": "Черный",
+    "description": "Mercedes-Benz Maybach S 680 - абсолютная роскошь. Ручная отделка, эксклюзивные материалы, все опции.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Burmester звук",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW i7 2023",
+    "brand": "BMW",
+    "model": "i7",
+    "year": 2023,
+    "mileage": 6000,
+    "price": 13500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 544,
+    "color": "Черный",
+    "description": "BMW i7 - электрический флагман. Футуристичный дизайн, премиум интерьер, все технологии.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Harman Kardon",
+      "Массаж сидений",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi RS Q8 2023",
+    "brand": "Audi",
+    "model": "RS Q8",
+    "year": 2023,
+    "mileage": 8500,
+    "price": 15500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "4.0 л V8",
+    "powerHp": 600,
+    "color": "Серый",
+    "description": "Audi RS Q8 - спортивный внедорожник. Мощный двигатель, отличная динамика, все опции RS.",
+    "features": [
+      "RS Performance",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Bang & Olufsen",
+      "Адаптивная подвеска",
+      "Спортивные сиденья"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Porsche 718 Cayman GT4 2023",
+    "brand": "Porsche",
+    "model": "718",
+    "year": 2023,
+    "mileage": 5500,
+    "price": 12500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Механика",
+    "drive": "Задний",
+    "engine": "4.0 л H6",
+    "powerHp": 420,
+    "color": "Оранжевый",
+    "description": "Porsche 718 Cayman GT4 - спортивное купе. Механика, отличная динамика, все опции GT.",
+    "features": [
+      "Sport Chrono",
+      "Кожаный салон",
+      "Спортивные сиденья",
+      "Bose звук",
+      "Адаптивная подвеска",
+      "Спортивный выхлоп"
+    ],
+    "images": [
+      "/Porsche.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Rolls-Royce Wraith 2022",
+    "brand": "Rolls-Royce",
+    "model": "Wraith",
+    "year": 2022,
+    "mileage": 15000,
+    "price": 38000000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "6.6 л V12",
+    "powerHp": 632,
+    "color": "Синий",
+    "description": "Эксклюзивный Rolls-Royce Wraith. Роскошное купе, ручная сборка, эксклюзивная комплектация.",
+    "features": [
+      "Ручная отделка",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Система ночного видения",
+      "Массаж сидений",
+      "Камера 360"
+    ],
+    "images": [
+      "/Rolls-Royce.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Mercedes-Benz EQS 2023",
+    "brand": "Mercedes-Benz",
+    "model": "EQS",
+    "year": 2023,
+    "mileage": 10000,
+    "price": 14500000,
+    "currency": "RUB",
+    "fuelType": "Электричество",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "Электродвигатель",
+    "powerHp": 516,
+    "color": "Белый",
+    "description": "Mercedes-Benz EQS - электрический флагман. Футуристичный дизайн, премиум интерьер, все технологии.",
+    "features": [
+      "MBUX система",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Burmester звук",
+      "Массаж сидений",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/Mercedes-Benz.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "BMW 3 Series 2023",
+    "brand": "BMW",
+    "model": "3 Series",
+    "year": 2023,
+    "mileage": 20000,
+    "price": 4500000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Задний",
+    "engine": "2.0 л I4",
+    "powerHp": 258,
+    "color": "Серый",
+    "description": "BMW 3 Series в отличном состоянии. Динамика и комфорт, все опции, отличное состояние.",
+    "features": [
+      "iDrive 8",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Harman Kardon",
+      "Камера заднего вида",
+      "Беспроводная зарядка"
+    ],
+    "images": [
+      "/BMW.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  },
+  {
+    "title": "Audi A4 2023",
+    "brand": "Audi",
+    "model": "A4",
+    "year": 2023,
+    "mileage": 22000,
+    "price": 4200000,
+    "currency": "RUB",
+    "fuelType": "Бензин",
+    "transmission": "Автомат",
+    "drive": "Полный",
+    "engine": "2.0 л I4",
+    "powerHp": 252,
+    "color": "Белый",
+    "description": "Audi A4 с полным пакетом опций. Премиум комфорт и технологии, отличное состояние.",
+    "features": [
+      "Virtual Cockpit",
+      "Кожаный салон",
+      "Панорамная крыша",
+      "Matrix LED",
+      "Bang & Olufsen",
+      "Камера заднего вида"
+    ],
+    "images": [
+      "/Audi.png",
+      "/detail_photo.png"
+    ],
+    "status": "available"
+  }
+]

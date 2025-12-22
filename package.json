@@ -1,0 +1,37 @@
+{
+  "name": "car-shop",
+  "version": "1.0.0",
+  "description": "Luxury car dealership website",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "cd apps/api && npm run dev",
+    "dev:web": "cd apps/web && npm run dev",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "build:api": "cd apps/api && npm run build",
+    "build:web": "cd apps/web && npm run build",
+    "build": "npm run build:api && npm run build:web",
+    "lint": "npm run lint:api && npm run lint:web",
+    "lint:api": "cd apps/api && npm run lint",
+    "lint:web": "cd apps/web && npm run lint",
+    "lint:fix": "npm run lint:fix:api && npm run lint:fix:web",
+    "lint:fix:api": "cd apps/api && npm run lint:fix",
+    "lint:fix:web": "cd apps/web && npm run lint:fix",
+    "format": "npm run format:api && npm run format:web",
+    "format:api": "cd apps/api && npm run format",
+    "format:web": "cd apps/web && npm run format",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.7.4"
+  }
+}
