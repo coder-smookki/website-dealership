@@ -1,5 +1,17 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
+export interface AuthUser {
+  id: string;
+  role: 'admin' | 'owner';
+  email: string;
+}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    user?: AuthUser;
+  }
+}
+
 export async function authMiddleware(
   request: FastifyRequest,
   reply: FastifyReply

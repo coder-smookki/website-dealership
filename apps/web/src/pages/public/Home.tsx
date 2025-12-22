@@ -12,7 +12,12 @@ export default function Home() {
   const [allCars, setAllCars] = useState<Car[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  
+  // Фильтры для будущего использования
+  // const [filters, setFilters] = useState<CarFilters>({
+  //   status: 'available',
+  //   limit: 1000,
+  // });
+
   // Фильтры по параметрам
   const [filterParams, setFilterParams] = useState({
     priceFrom: '',

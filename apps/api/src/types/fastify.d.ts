@@ -1,20 +1,5 @@
 import '@fastify/jwt';
 
-export interface AuthUser {
-  id: string;
-  role: 'admin' | 'owner';
-  email: string;
-  name?: string;
-  phone?: string;
-}
-
-declare module '@fastify/jwt' {
-  interface FastifyJWT {
-    payload: AuthUser;
-    user: AuthUser;
-  }
-}
-
 declare module 'fastify' {
   interface FastifyInstance {
     jwt: {
@@ -25,6 +10,6 @@ declare module 'fastify' {
   
   interface FastifyRequest {
     jwtVerify: () => Promise<void>;
-    user: AuthUser;
   }
 }
+

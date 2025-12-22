@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { getUserById, updateUser, getUsers } from '../services/users.service.js';
+import { createUser, getUserById, updateUser, getUsers } from '../services/users.service.js';
 import { createUserSchema, updateUserSchema } from '../utils/validate.js';
 import { handleError } from '../utils/errors.js';
 import { createUser as createUserService } from '../services/auth.service.js';

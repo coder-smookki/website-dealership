@@ -11,7 +11,7 @@ import {
 } from '../services/cars.service.js';
 import { createCarSchema, updateCarSchema, updateStatusSchema } from '../utils/validate.js';
 import { handleError } from '../utils/errors.js';
-import type { AuthUser } from '../types/fastify.js';
+import { AuthUser } from '../middlewares/auth.js';
 
 export async function listCars(
   request: FastifyRequest<{ Querystring: CarFilters }>,

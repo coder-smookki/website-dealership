@@ -21,17 +21,8 @@ export interface CarFilters {
   createdBy?: string;
 }
 
-export interface CarsListResponse {
-  cars: any[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
-
-export async function getCars(filters: CarFilters = {}): Promise<CarsListResponse> {  const {
+export async function getCars(filters: CarFilters = {}) {
+  const {
     page = 1,
     limit = 20,
     q,
@@ -158,11 +149,8 @@ export async function getCarById(id: string, includePending = false) {
   return car;
 }
 
-export async function createCar(
-  data: Partial<ICar>,
-  createdBy: string,
-  userRole?: 'admin' | 'owner'
-): Promise<any> {  // Если создает владелец - статус pending, если админ - approved
+export async function createCar(data: Partial<ICar>, createdBy: string, userRole?: 'admin' | 'owner') {
+  // Если создает владелец - статус pending, если админ - approved
   const moderationStatus = userRole === 'admin' ? 'approved' : 'pending';
   
   const car = await Car.create({

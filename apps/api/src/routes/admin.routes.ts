@@ -34,7 +34,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, listCars as any);
+  }, listCars);
 
   fastify.get('/api/admin/cars/:id', {
     schema: {
@@ -43,7 +43,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, getCar as any);
+  }, getCar);
 
   fastify.post('/api/admin/cars', {
     schema: {
@@ -76,7 +76,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, createCarHandler as any);
+  }, createCarHandler);
 
   fastify.patch('/api/admin/cars/:id', {
     schema: {
@@ -85,7 +85,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, updateCarHandler as any);
+  }, updateCarHandler);
 
   fastify.delete('/api/admin/cars/:id', {
     schema: {
@@ -94,7 +94,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, deleteCarHandler as any);
+  }, deleteCarHandler);
 
   fastify.patch('/api/admin/cars/:id/moderate', {
     schema: {
@@ -111,7 +111,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, moderateCarHandler as any);
+  }, moderateCarHandler);
 
   // Leads
   fastify.get('/api/admin/leads', {
@@ -121,7 +121,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, listLeads as any);
+  }, listLeads);
 
   fastify.get('/api/admin/leads/:id', {
     schema: {
@@ -130,7 +130,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, getLead as any);
+  }, getLead);
 
   fastify.patch('/api/admin/leads/:id', {
     schema: {
@@ -146,7 +146,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, updateLeadStatusHandler as any);
+  }, updateLeadStatusHandler);
 
   // Settings
   fastify.get('/api/admin/settings', {
@@ -156,7 +156,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, getSettingsHandler as any);
+  }, getSettingsHandler);
 
   fastify.put('/api/admin/settings', {
     schema: {
@@ -165,7 +165,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, updateSettingsHandler as any);
+  }, updateSettingsHandler);
 
   // Users
   fastify.get('/api/admin/users', {
@@ -175,7 +175,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, listUsers as any);
+  }, listUsers);
 
   fastify.get('/api/admin/users/:id', {
     schema: {
@@ -184,7 +184,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, getUser as any);
+  }, getUser);
 
   fastify.post('/api/admin/users', {
     schema: {
@@ -204,7 +204,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, createUserHandler as any);
+  }, createUserHandler);
 
   fastify.patch('/api/admin/users/:id', {
     schema: {
@@ -213,6 +213,6 @@ export async function adminRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  } as any, updateUserHandler as any);
+  }, updateUserHandler);
 }
 

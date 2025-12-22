@@ -44,18 +44,9 @@ export default function CarCreate() {
     e.preventDefault();
     setLoading(true);
     try {
-      const ownerData = user
-        ? {
-            _id: user.id,
-            email: user.email,
-            name: user.name,
-            phone: user.phone,
-          }
-        : undefined;
-
       await carsApi.createMyCar({
         ...formData,
-        ownerId: ownerData,
+        ownerId: user?.id || '',
       });
       alert('Объявление создано и отправлено на модерацию. После одобрения администратором оно появится на сайте.');
       navigate('/account/cars');

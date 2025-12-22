@@ -31,6 +31,27 @@ export interface Car {
   updatedAt: string;
 }
 
+export interface CreateCarData {
+  title: string;
+  brand: string;
+  model: string;
+  year: number;
+  mileage: number;
+  price: number;
+  currency: string;
+  fuelType: string;
+  transmission: string;
+  drive: string;
+  engine: string;
+  powerHp: number;
+  color: string;
+  description: string;
+  features: string[];
+  images: string[];
+  status?: 'available' | 'reserved' | 'sold';
+  ownerId: string;
+}
+
 export interface CarFilters {
   page?: number;
   limit?: number;
@@ -87,7 +108,7 @@ export const carsApi = {
     return http.get('/api/my/cars', { params: filters }).then((res) => res.data);
   },
 
-  createMyCar: (data: Partial<Car>): Promise<Car> => {
+  createMyCar: (data: CreateCarData): Promise<Car> => {
     return http.post('/api/my/cars', data).then((res) => res.data);
   },
 

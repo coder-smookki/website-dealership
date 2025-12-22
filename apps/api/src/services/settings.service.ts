@@ -1,12 +1,11 @@
 import { Settings } from '../models/Settings.js';
 
-export async function getSettings(): Promise<any> {
-  const existing = await Settings.findOne().lean();
-  let settings: any = existing;
+export async function getSettings() {
+  let settings = await Settings.findOne().lean();
   if (!settings) {
     settings = (await Settings.create({})).toObject();
   }
-  return settings as any;
+  return settings;
 }
 
 export async function updateSettings(data: {
@@ -15,7 +14,7 @@ export async function updateSettings(data: {
   address?: string;
   workHours?: string;
   slogan?: string;
-}): Promise<any> {
+}) {
   let settings = await Settings.findOne();
   if (!settings) {
     settings = await Settings.create(data);
@@ -23,5 +22,6 @@ export async function updateSettings(data: {
     Object.assign(settings, data);
     await settings.save();
   }
-  return settings as any;
+  return settings;
 }
+

@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Car } from '../models/Car.js';
-import type { AuthUser } from '../types/fastify.js';
+import { AuthUser } from './auth.js';
 
 export async function canAccessCar(
   request: FastifyRequest<{ Params: { id: string } }>,

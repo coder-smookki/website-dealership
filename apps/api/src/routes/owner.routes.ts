@@ -33,7 +33,7 @@ export async function ownerRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware],
-  }  as any, createMyCar as any);
+  }, createMyCar);
 
   fastify.get('/api/my/cars', {
     schema: {
@@ -51,7 +51,7 @@ export async function ownerRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware],
-  }  as any, listMyCars as any);
+  }, listMyCars);
 
   fastify.get('/api/my/cars/:id', {
     schema: {
@@ -66,7 +66,7 @@ export async function ownerRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware, canAccessCar],
-  }  as any, getMyCar as any);
+  }, getMyCar);
 
   fastify.patch('/api/my/cars/:id/status', {
     schema: {
@@ -88,6 +88,6 @@ export async function ownerRoutes(fastify: FastifyInstance) {
       },
     },
     preHandler: [authMiddleware, canAccessCar],
-  }  as any, updateMyCarStatus as any);
+  }, updateMyCarStatus);
 }
 
