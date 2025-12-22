@@ -2,15 +2,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Копируем package.json файлы
-COPY package*.json ./
-COPY apps/api/package*.json ./apps/api/
+# Копируем package.json
+COPY apps/api/package*.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
 # Копируем исходный код
-COPY apps/api ./apps/api
+COPY apps/api ./
 
 # Собираем проект
 WORKDIR /app/apps/api
@@ -28,11 +27,10 @@ COPY apps/api/package*.json ./
 RUN npm install --omit=dev
 
 # Копируем собранные файлы
-COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/dist ./dist
 
 # Открываем порт
 EXPOSE 3001
 
 # Запускаем приложение
 CMD ["node", "dist/server.js"]
-

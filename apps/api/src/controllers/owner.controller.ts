@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { getCars, getCarById, updateCarStatus, createCar, CarFilters } from '../services/cars.service.js';
 import { updateStatusSchema, createCarSchema } from '../utils/validate.js';
 import { handleError } from '../utils/errors.js';
-import { AuthUser } from '../middlewares/auth.js';
+import type { AuthUser } from '../types/fastify.js';
 
 export async function listMyCars(
   request: FastifyRequest<{ Querystring: CarFilters }>,

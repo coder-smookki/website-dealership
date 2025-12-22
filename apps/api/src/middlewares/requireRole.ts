@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { AuthUser } from './auth.js';
+import type { AuthUser } from '../types/fastify.js';
 
 export function requireRole(role: 'admin' | 'owner') {
   return async (request: FastifyRequest, reply: FastifyReply) => {

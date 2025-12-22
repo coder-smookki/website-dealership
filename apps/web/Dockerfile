@@ -2,25 +2,24 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Копируем package.json файлы
-COPY package*.json ./
-COPY apps/web/package*.json ./apps/web/
+
+# Копируем package.json
+COPY apps/web/package*.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
 # Копируем исходный код
-COPY apps/web ./apps/web
+COPY apps/web ./
 
 # Собираем проект
-WORKDIR /app/apps/web
 RUN npm run build
 
 # Production stage
 FROM nginx:alpine
 
 # Копируем собранные файлы
-COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Копируем конфигурацию nginx
 COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
@@ -28,4 +27,3 @@ COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
-
