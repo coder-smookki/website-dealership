@@ -1,15 +1,13 @@
-import '@fastify/jwt';
+import 'fastify';
 
 declare module 'fastify' {
-  interface FastifyInstance {
-    jwt: {
-      sign: (payload: any, options?: any) => string;
-      verify: (token: string) => any;
-    };
-  }
-  
   interface FastifyRequest {
-    jwtVerify: () => Promise<void>;
+    user?: {
+      id: string;
+      role: 'admin' | 'owner';
+      email: string;
+    };
+    requestId?: string;
+    startTime?: number;
   }
 }
-

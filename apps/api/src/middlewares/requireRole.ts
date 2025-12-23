@@ -1,16 +1,17 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthUser } from './auth.js';
+import { UnauthorizedError, ForbiddenError } from '../utils/errors.js';
 
 export function requireRole(role: 'admin' | 'owner') {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     const user = request.user as AuthUser | undefined;
     
     if (!user) {
-      return reply.code(401).send({ error: 'Unauthorized' });
+      throw new UnauthorizedError('User not authenticated');
     }
 
     if (user.role !== role && user.role !== 'admin') {
-      return reply.code(403).send({ error: 'Forbidden' });
+      throw new ForbiddenError('Insufficient permissions');
     }
   };
 }

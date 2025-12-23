@@ -1,5 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { Car } from '../models/Car.js';
+import { ObjectId } from 'mongodb';
+import { getDatabase } from '../db/client.js';
+import { getCarsCollection } from '../db/collections.js';
 import { AuthUser } from './auth.js';
 
 export async function canAccessCar(
@@ -18,7 +20,14 @@ export async function canAccessCar(
   }
 
   // Owner может только свои объявления
-  const car = await Car.findById(request.params.id);
+  if (!ObjectId.isValid(request.params.id)) {
+    return reply.code(404).send({ error: 'Car not found' });
+  }
+
+  const db = getDatabase();
+  const carsCollection = getCarsCollection(db);
+  const car = await carsCollection.findOne({ _id: new ObjectId(request.params.id) });
+  
   if (!car) {
     return reply.code(404).send({ error: 'Car not found' });
   }

@@ -15,16 +15,6 @@ export default function Header() {
       .then(setSettings)
       .catch((error) => {
         console.error('Error loading settings:', error);
-        setSettings({
-          _id: '',
-          phone: '+7 495 266 7524',
-          email: 'info@car-shop.ru',
-          address: 'Москва, ул. Примерная, д. 1',
-          workHours: 'Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00',
-          slogan: 'SMK Dealership',
-          createdAt: '',
-          updatedAt: '',
-        });
       });
   }, []);
 

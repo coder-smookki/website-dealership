@@ -1,39 +1,50 @@
-import mongoose from 'mongoose';
-import { Settings } from '../models/Settings.js';
+import { connectDatabase, closeDatabase, getDatabase } from '../db/client.js';
+import { getSettingsCollection, SettingsDocument } from '../db/collections.js';
 import { env } from '../config/env.js';
 
 async function updateSettings() {
-  try {
-    await mongoose.connect(env.mongodbUri);
-    console.log('Connected to MongoDB');
+  await connectDatabase();
+  console.log('Connected to MongoDB');
 
-    // Получаем или создаем настройки
-    let settings = await Settings.findOne();
+  const db = getDatabase();
+  const settingsCollection = getSettingsCollection(db);
+
+  // Получаем или создаем настройки
+  let settings = await settingsCollection.findOne();
+  
+  if (!settings) {
+    const now = new Date();
+    const defaultSettings: Omit<SettingsDocument, '_id'> = {
+      phone: '+7 495 266 7524',
+      email: 'info@car-shop.ru',
+      address: 'Москва, ул. Примерная, д. 1',
+      workHours: 'Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00',
+      slogan: 'SMK Dealership',
+      createdAt: now,
+      updatedAt: now,
+    } as Omit<SettingsDocument, '_id'>;
     
-    if (!settings) {
-      settings = await Settings.create({
-        phone: '+7 495 266 7524',
-        email: 'info@car-shop.ru',
-        address: 'Москва, ул. Примерная, д. 1',
-        workHours: 'Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00',
-        slogan: 'SMK Dealership',
-      });
-      console.log('Settings created with new slogan');
-    } else {
-      settings.slogan = 'SMK Dealership';
-      await settings.save();
-      console.log('Settings updated with new slogan');
-    }
-
-    console.log(`\n✅ Settings updated successfully!`);
-    console.log(`   Slogan: ${settings.slogan}`);
-
-    process.exit(0);
-  } catch (error) {
-    console.error('Error updating settings:', error);
-    process.exit(1);
+    const result = await settingsCollection.insertOne(defaultSettings as SettingsDocument);
+    settings = { ...defaultSettings, _id: result.insertedId } as SettingsDocument;
+    console.log('Settings created with new slogan');
+  } else {
+    const result = await settingsCollection.findOneAndUpdate(
+      {},
+      { $set: { slogan: 'SMK Dealership', updatedAt: new Date() } },
+      { returnDocument: 'after' }
+    );
+    settings = result || settings;
+    console.log('Settings updated with new slogan');
   }
+
+  console.log(`\n✅ Settings updated successfully!`);
+  console.log(`   Slogan: ${settings.slogan}`);
+
+  await closeDatabase();
+  process.exit(0);
 }
 
-updateSettings();
-
+updateSettings().catch((error) => {
+  console.error('Error updating settings:', error);
+  process.exit(1);
+});

@@ -1,12 +1,18 @@
-import { Settings } from '../models/Settings.js';
+import { getDatabase } from '../db/client.js';
+import { getSettingsCollection, SettingsDocument } from '../db/collections.js';
 
-export async function getSettings() {
-  let settings = await Settings.findOne().lean();
-  
-  if (!settings) {
-    settings = await Settings.create({});
-  }
-  
+interface SettingsResponse {
+  _id: string;
+  phone: string;
+  email: string;
+  address: string;
+  workHours: string;
+  slogan: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function mapSettingsToResponse(settings: SettingsDocument): SettingsResponse {
   return {
     _id: settings._id.toString(),
     phone: settings.phone,
@@ -19,50 +25,67 @@ export async function getSettings() {
   };
 }
 
+export async function getSettings(): Promise<SettingsResponse> {
+  const db = getDatabase();
+  const settingsCollection = getSettingsCollection(db);
+  
+  let settings = await settingsCollection.findOne();
+  
+  if (!settings) {
+    const now = new Date();
+    const defaultSettings: Omit<SettingsDocument, '_id'> = {
+      phone: '+7 495 266 7524',
+      email: 'info@car-shop.ru',
+      address: 'Москва, ул. Примерная, д. 1',
+      workHours: 'Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00',
+      slogan: 'SMK Dealership',
+      createdAt: now,
+      updatedAt: now,
+    } as Omit<SettingsDocument, '_id'>;
+    
+    const result = await settingsCollection.insertOne(defaultSettings as SettingsDocument);
+    settings = { ...defaultSettings, _id: result.insertedId } as SettingsDocument;
+  }
+  
+  return mapSettingsToResponse(settings);
+}
+
 export async function updateSettings(data: {
   phone?: string;
   email?: string;
   address?: string;
   workHours?: string;
   slogan?: string;
-}) {
-  let settings = await Settings.findOne();
+}): Promise<SettingsResponse> {
+  const db = getDatabase();
+  const settingsCollection = getSettingsCollection(db);
+  
+  let settings = await settingsCollection.findOne();
+  
+  const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
   
   if (!settings) {
-    settings = await Settings.create({
+    const now = new Date();
+    const defaultSettings: Omit<SettingsDocument, '_id'> = {
       phone: data.phone || '+7 495 266 7524',
       email: data.email || 'info@car-shop.ru',
       address: data.address || 'Москва, ул. Примерная, д. 1',
       workHours: data.workHours || 'Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00',
       slogan: data.slogan || 'SMK Dealership',
-    });
-  } else {
-    const updateData: Record<string, unknown> = {};
-    if (data.phone !== undefined) updateData.phone = data.phone;
-    if (data.email !== undefined) updateData.email = data.email;
-    if (data.address !== undefined) updateData.address = data.address;
-    if (data.workHours !== undefined) updateData.workHours = data.workHours;
-    if (data.slogan !== undefined) updateData.slogan = data.slogan;
+      createdAt: now,
+      updatedAt: now,
+    } as Omit<SettingsDocument, '_id'>;
     
-    settings = await Settings.findOneAndUpdate(
+    const result = await settingsCollection.insertOne(defaultSettings as SettingsDocument);
+    settings = { ...defaultSettings, _id: result.insertedId } as SettingsDocument;
+  } else {
+    const result = await settingsCollection.findOneAndUpdate(
       {},
       { $set: updateData },
-      { new: true, runValidators: true }
+      { returnDocument: 'after' }
     );
+    if (result) settings = result;
   }
   
-  if (!settings) {
-    throw new Error('Failed to update settings');
-  }
-  
-  return {
-    _id: settings._id.toString(),
-    phone: settings.phone,
-    email: settings.email,
-    address: settings.address,
-    workHours: settings.workHours,
-    slogan: settings.slogan,
-    createdAt: settings.createdAt,
-    updatedAt: settings.updatedAt,
-  };
+  return mapSettingsToResponse(settings);
 }

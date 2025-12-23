@@ -1,15 +1,17 @@
-import mongoose, { ConnectOptions } from 'mongoose';
+import { MongoClient, Db, MongoClientOptions } from 'mongodb';
 import { env } from '../config/env.js';
 
 export interface IDataSource {
-  getConnection(): typeof mongoose;
+  getConnection(): Db;
   connect(): Promise<void>;
   disconnect(): Promise<void>;
-  isConnected(): Promise<boolean>;
+  isConnected(): boolean;
 }
 
 export class MongoDataSource implements IDataSource {
   private static instance: MongoDataSource;
+  private client: MongoClient | null = null;
+  private db: Db | null = null;
   private connectionPromise: Promise<void> | null = null;
 
   private constructor() {}
@@ -21,31 +23,33 @@ export class MongoDataSource implements IDataSource {
     return MongoDataSource.instance;
   }
 
-  getConnection(): typeof mongoose {
-    if (mongoose.connection.readyState !== 1) {
+  getConnection(): Db {
+    if (!this.db || !this.isConnected()) {
       throw new Error('MongoDB is not connected');
     }
-    return mongoose;
+    return this.db;
   }
 
   async connect(): Promise<void> {
-    if (mongoose.connection.readyState === 1) return;
+    if (this.isConnected()) return;
     if (this.connectionPromise) return this.connectionPromise;
 
-    const options: ConnectOptions = {
-      autoIndex: env.nodeEnv !== 'production',
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
+    const options: MongoClientOptions = {
       maxPoolSize: 10,
       minPoolSize: 1,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
     };
 
-    this.connectionPromise = mongoose
-      .connect(env.mongodbUri, options)
-      .then(() => {
-        // Connection successful
-      })
+    this.connectionPromise = (async () => {
+      this.client = new MongoClient(env.mongodbUri, options);
+      await this.client.connect();
+      this.db = this.client.db();
+    })()
       .catch((err) => {
+        this.client = null;
+        this.db = null;
         throw err;
       })
       .finally(() => {
@@ -56,16 +60,17 @@ export class MongoDataSource implements IDataSource {
   }
 
   async disconnect(): Promise<void> {
-    if (mongoose.connection.readyState === 0) return;
+    if (!this.client) return;
+    
     try {
-      await mongoose.disconnect();
-    } catch (err) {
-      // Log error but don't throw
+      await this.client.close();
+    } finally {
+      this.client = null;
+      this.db = null;
     }
   }
 
-  async isConnected(): Promise<boolean> {
-    return mongoose.connection.readyState === 1;
+  isConnected(): boolean {
+    return this.client !== null && this.db !== null;
   }
 }
-

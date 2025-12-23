@@ -10,28 +10,78 @@ import { ownerRoutes } from './routes/owner.routes.js';
 import { adminRoutes } from './routes/admin.routes.js';
 import formbody from '@fastify/formbody';
 import { registerShutdownHandler } from './shutdown.js';
+import { requestIdMiddleware } from './middlewares/requestId.js';
+import { handleError } from './utils/errors.js';
 
 async function buildServer() {
   const fastify = Fastify({
-    logger: env.nodeEnv === 'development',
+    logger: false, // Отключаем встроенный логгер, используем наш кастомный
   });
 
-  // Plugins - CORS должен быть первым!
+  // Plugins - loggerPlugin должен быть первым
+  await fastify.register(loggerPlugin);
   await fastify.register(corsPlugin);
   await fastify.register(formbody);
-  await fastify.register(loggerPlugin);
   await fastify.register(swaggerPlugin);
   await fastify.register(dbPlugin);
 
-  // Глобальный хук для добавления CORS заголовков ко всем ответам (резервный)
-  fastify.addHook('onSend', async (request, reply) => {
-    // Добавляем CORS заголовки ко всем ответам
-    const origin = request.headers.origin || '*';
-    reply.header('Access-Control-Allow-Origin', origin);
-    reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    reply.header('Access-Control-Allow-Credentials', 'true');
-    reply.header('Access-Control-Expose-Headers', 'Content-Type, Authorization');
+  // Request ID middleware и логирование начала запроса
+  fastify.addHook('onRequest', async (request, reply) => {
+    // Устанавливаем requestId
+    await requestIdMiddleware(request, reply);
+    
+    // Устанавливаем время начала запроса
+    const startTime = Date.now();
+    request.startTime = startTime;
+    
+    // Логируем начало запроса
+    const logData = {
+      request_id: request.requestId || 'unknown',
+      method: request.method,
+      path: request.url,
+      msg: 'Request started',
+      user_agent: request.headers['user-agent'],
+      client_ip: request.ip,
+      query: request.query,
+    };
+    
+    // Используем наш кастомный logger с безопасной проверкой
+    try {
+      if (fastify.logger && typeof fastify.logger.info === 'function') {
+        fastify.logger.info(logData);
+      }
+    } catch (err) {
+      // Игнорируем ошибки логирования
+    }
+  });
+
+  // Логирование конца запроса
+  fastify.addHook('onResponse', async (request, reply) => {
+    const duration = request.startTime ? Date.now() - request.startTime : 0;
+    
+    // Логируем завершение запроса
+    const logData = {
+      request_id: request.requestId || 'unknown',
+      method: request.method,
+      path: request.url,
+      msg: 'Request completed',
+      status_code: reply.statusCode,
+      duration_ms: duration,
+    };
+    
+    // Используем наш кастомный logger с безопасной проверкой
+    try {
+      if (fastify.logger && typeof fastify.logger.info === 'function') {
+        fastify.logger.info(logData);
+      }
+    } catch (err) {
+      // Игнорируем ошибки логирования
+    }
+  });
+
+  // Глобальный обработчик ошибок
+  fastify.setErrorHandler((error, request, reply) => {
+    return handleError(error, reply, request, fastify);
   });
 
   // Routes
@@ -52,8 +102,11 @@ async function start() {
   try {
     const server = await buildServer();
     await server.listen({ port: env.port, host: env.host });
-    server.log.info(`Server listening on http://${env.host}:${env.port}`);
-    server.log.info(`Swagger UI available at http://${env.host}:${env.port}/docs`);
+    // Используем наш кастомный logger
+    if (server.logger) {
+      server.logger.info(`Server listening on http://${env.host}:${env.port}`);
+      server.logger.info(`Swagger UI available at http://${env.host}:${env.port}/docs`);
+    }
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);

@@ -1,5 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { User } from '../models/User.js';
+import { ObjectId } from 'mongodb';
+import { getDatabase } from '../db/client.js';
+import { getUsersCollection, UserDocument } from '../db/collections.js';
 import { UnauthorizedError, ConflictError } from '../utils/errors.js';
 import { generateTokenPair } from './token.service.js';
 
@@ -23,11 +25,14 @@ export interface CreateUserResult {
 }
 
 export async function loginUser(email: string, password: string): Promise<LoginResult> {
+  const db = getDatabase();
+  const usersCollection = getUsersCollection(db);
+  
   const normalizedEmail = email.toLowerCase().trim();
-  const user = await User.findOne({ 
+  const user = await usersCollection.findOne({ 
     email: normalizedEmail, 
     isActive: true 
-  }).select('+passwordHash');
+  });
   
   if (!user) {
     throw new UnauthorizedError('Неверный email или пароль');
@@ -62,25 +67,33 @@ export async function createUser(
   name?: string,
   phone?: string
 ): Promise<CreateUserResult> {
+  const db = getDatabase();
+  const usersCollection = getUsersCollection(db);
+  
   const normalizedEmail = email.toLowerCase().trim();
-  const existing = await User.findOne({ email: normalizedEmail });
+  const existing = await usersCollection.findOne({ email: normalizedEmail });
   if (existing) {
     throw new ConflictError('User already exists');
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
+  const now = new Date();
   
-  const user = await User.create({
+  const user: Omit<UserDocument, '_id'> = {
     email: normalizedEmail,
     passwordHash,
     role,
     name,
     phone,
     isActive: true,
-  });
+    createdAt: now,
+    updatedAt: now,
+  } as Omit<UserDocument, '_id'>;
+
+  const result = await usersCollection.insertOne(user as UserDocument);
   
   return {
-    id: user._id.toString(),
+    id: result.insertedId.toString(),
     email: user.email,
     role: user.role,
     name: user.name,

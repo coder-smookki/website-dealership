@@ -1,6 +1,6 @@
-import { Types } from 'mongoose';
-import { Lead } from '../models/Lead.js';
-import { Car } from '../models/Car.js';
+import { ObjectId } from 'mongodb';
+import { getDatabase } from '../db/client.js';
+import { getLeadsCollection, getCarsCollection, LeadDocument } from '../db/collections.js';
 import { ValidationError, NotFoundError } from '../utils/errors.js';
 
 export interface LeadFilters {
@@ -10,6 +10,42 @@ export interface LeadFilters {
   carId?: string;
   q?: string;
   sort?: string;
+}
+
+interface LeadResponse {
+  _id: string;
+  carId: string;
+  carTitle?: string;
+  carBrand?: string;
+  carModel?: string;
+  carPrice?: number;
+  carImages?: string[];
+  name: string;
+  phone: string;
+  email?: string;
+  message?: string;
+  status: 'new' | 'in_progress' | 'closed';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function mapLeadToResponse(lead: LeadDocument): LeadResponse {
+  return {
+    _id: lead._id.toString(),
+    carId: lead.carId.toString(),
+    carTitle: lead.carTitle,
+    carBrand: lead.carBrand,
+    carModel: lead.carModel,
+    carPrice: lead.carPrice,
+    carImages: lead.carImages,
+    name: lead.name,
+    phone: lead.phone,
+    email: lead.email,
+    message: lead.message,
+    status: lead.status,
+    createdAt: lead.createdAt,
+    updatedAt: lead.updatedAt,
+  };
 }
 
 export async function getLeads(filters: LeadFilters = {}) {
@@ -22,17 +58,16 @@ export async function getLeads(filters: LeadFilters = {}) {
     sort = 'createdAt',
   } = filters;
 
+  const db = getDatabase();
+  const leadsCollection = getLeadsCollection(db);
+
   const query: Record<string, unknown> = {};
 
-  if (status) {
-    query.status = status;
-  }
-
+  if (status) query.status = status;
+  
   if (carId) {
-    if (!Types.ObjectId.isValid(carId)) {
-      throw new ValidationError('Invalid car ID');
-    }
-    query.carId = new Types.ObjectId(carId);
+    if (!ObjectId.isValid(carId)) throw new ValidationError('Invalid car ID');
+    query.carId = new ObjectId(carId);
   }
 
   if (q) {
@@ -47,31 +82,12 @@ export async function getLeads(filters: LeadFilters = {}) {
   const sortQuery = sort === 'createdAt' ? { createdAt: -1 } : { createdAt: 1 };
 
   const [leads, total] = await Promise.all([
-    Lead.find(query)
-      .sort(sortQuery)
-      .skip(skip)
-      .limit(limit)
-      .lean(),
-    Lead.countDocuments(query),
+    leadsCollection.find(query).sort(sortQuery).skip(skip).limit(limit).toArray(),
+    leadsCollection.countDocuments(query),
   ]);
 
   return {
-    leads: leads.map(lead => ({
-      _id: lead._id.toString(),
-      carId: lead.carId.toString(),
-      carTitle: lead.carTitle,
-      carBrand: lead.carBrand,
-      carModel: lead.carModel,
-      carPrice: lead.carPrice,
-      carImages: lead.carImages,
-      name: lead.name,
-      phone: lead.phone,
-      email: lead.email,
-      message: lead.message,
-      status: lead.status,
-      createdAt: lead.createdAt,
-      updatedAt: lead.updatedAt,
-    })),
+    leads: leads.map(mapLeadToResponse),
     pagination: {
       page,
       limit,
@@ -81,32 +97,16 @@ export async function getLeads(filters: LeadFilters = {}) {
   };
 }
 
-export async function getLeadById(id: string) {
-  if (!Types.ObjectId.isValid(id)) {
-    throw new ValidationError('Invalid lead ID');
-  }
+export async function getLeadById(id: string): Promise<LeadResponse> {
+  if (!ObjectId.isValid(id)) throw new ValidationError('Invalid lead ID');
   
-  const lead = await Lead.findById(id).lean();
-  if (!lead) {
-    throw new NotFoundError('Lead');
-  }
+  const db = getDatabase();
+  const leadsCollection = getLeadsCollection(db);
+  const lead = await leadsCollection.findOne({ _id: new ObjectId(id) });
   
-  return {
-    _id: lead._id.toString(),
-    carId: lead.carId.toString(),
-    carTitle: lead.carTitle,
-    carBrand: lead.carBrand,
-    carModel: lead.carModel,
-    carPrice: lead.carPrice,
-    carImages: lead.carImages,
-    name: lead.name,
-    phone: lead.phone,
-    email: lead.email,
-    message: lead.message,
-    status: lead.status,
-    createdAt: lead.createdAt,
-    updatedAt: lead.updatedAt,
-  };
+  if (!lead) throw new NotFoundError('Lead');
+  
+  return mapLeadToResponse(lead);
 }
 
 export async function createLead(data: {
@@ -115,19 +115,20 @@ export async function createLead(data: {
   phone: string;
   email?: string;
   message?: string;
-}) {
-  if (!Types.ObjectId.isValid(data.carId)) {
-    throw new ValidationError('Invalid car ID');
-  }
+}): Promise<LeadResponse> {
+  if (!ObjectId.isValid(data.carId)) throw new ValidationError('Invalid car ID');
   
-  // Получаем данные автомобиля для денормализации
-  const car = await Car.findById(data.carId).lean();
-  if (!car) {
-    throw new NotFoundError('Car');
-  }
+  const db = getDatabase();
+  const leadsCollection = getLeadsCollection(db);
+  const carsCollection = getCarsCollection(db);
   
-  const lead = await Lead.create({
-    carId: new Types.ObjectId(data.carId),
+  // Денормализация: получаем данные автомобиля
+  const car = await carsCollection.findOne({ _id: new ObjectId(data.carId) });
+  if (!car) throw new NotFoundError('Car');
+  
+  const now = new Date();
+  const lead: Omit<LeadDocument, '_id'> = {
+    carId: new ObjectId(data.carId),
     carTitle: car.title,
     carBrand: car.brand,
     carModel: car.model,
@@ -138,58 +139,30 @@ export async function createLead(data: {
     email: data.email,
     message: data.message,
     status: 'new',
-  });
+    createdAt: now,
+    updatedAt: now,
+  } as Omit<LeadDocument, '_id'>;
   
-  return {
-    _id: lead._id.toString(),
-    carId: lead.carId.toString(),
-    carTitle: lead.carTitle,
-    carBrand: lead.carBrand,
-    carModel: lead.carModel,
-    carPrice: lead.carPrice,
-    carImages: lead.carImages,
-    name: lead.name,
-    phone: lead.phone,
-    email: lead.email,
-    message: lead.message,
-    status: lead.status,
-    createdAt: lead.createdAt,
-    updatedAt: lead.updatedAt,
-  };
+  const result = await leadsCollection.insertOne(lead as LeadDocument);
+  
+  return mapLeadToResponse({ ...lead, _id: result.insertedId } as LeadDocument);
 }
 
 export async function updateLeadStatus(
   id: string,
   status: 'new' | 'in_progress' | 'closed'
-) {
-  if (!Types.ObjectId.isValid(id)) {
-    throw new ValidationError('Invalid lead ID');
-  }
+): Promise<LeadResponse> {
+  if (!ObjectId.isValid(id)) throw new ValidationError('Invalid lead ID');
   
-  const lead = await Lead.findByIdAndUpdate(
-    id,
-    { $set: { status } },
-    { new: true, runValidators: true }
-  ).lean();
+  const db = getDatabase();
+  const leadsCollection = getLeadsCollection(db);
+  const result = await leadsCollection.findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: { status, updatedAt: new Date() } },
+    { returnDocument: 'after' }
+  );
   
-  if (!lead) {
-    throw new NotFoundError('Lead');
-  }
+  if (!result) throw new NotFoundError('Lead');
   
-  return {
-    _id: lead._id.toString(),
-    carId: lead.carId.toString(),
-    carTitle: lead.carTitle,
-    carBrand: lead.carBrand,
-    carModel: lead.carModel,
-    carPrice: lead.carPrice,
-    carImages: lead.carImages,
-    name: lead.name,
-    phone: lead.phone,
-    email: lead.email,
-    message: lead.message,
-    status: lead.status,
-    createdAt: lead.createdAt,
-    updatedAt: lead.updatedAt,
-  };
+  return mapLeadToResponse(result);
 }

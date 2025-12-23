@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { verifyAccessToken } from '../services/token.service.js';
 import { UnauthorizedError } from '../utils/errors.js';
-import { handleError } from '../utils/errors.js';
 
 export interface AuthUser {
   id: string;
@@ -26,16 +25,11 @@ export async function authMiddleware(
   }
   
   const token = authHeader.substring(7);
+  const payload = await verifyAccessToken(token);
   
-  try {
-    const payload = await verifyAccessToken(token);
-    request.user = {
-      id: payload.id,
-      role: payload.role,
-      email: payload.email,
-    };
-  } catch (error) {
-    // Ошибка уже обработана в verifyAccessToken как UnauthorizedError
-    throw error;
-  }
+  request.user = {
+    id: payload.id,
+    role: payload.role,
+    email: payload.email,
+  };
 }

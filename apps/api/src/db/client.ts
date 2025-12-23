@@ -1,3 +1,4 @@
+import { Db } from 'mongodb';
 import { MongoDataSource } from './datasource.js';
 
 const dataSource = MongoDataSource.getInstance();
@@ -6,7 +7,7 @@ export async function connectDatabase(): Promise<void> {
   return dataSource.connect();
 }
 
-export function getDatabase() {
+export function getDatabase(): Db {
   return dataSource.getConnection();
 }
 
