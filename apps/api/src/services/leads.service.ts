@@ -79,7 +79,7 @@ export async function getLeads(filters: LeadFilters = {}) {
   }
 
   const skip = (page - 1) * limit;
-  const sortQuery = sort === 'createdAt' ? { createdAt: -1 } : { createdAt: 1 };
+  const sortQuery: { createdAt: 1 | -1 } = sort === 'createdAt' ? { createdAt: -1 } : { createdAt: 1 };
 
   const [leads, total] = await Promise.all([
     leadsCollection.find(query).sort(sortQuery).skip(skip).limit(limit).toArray(),

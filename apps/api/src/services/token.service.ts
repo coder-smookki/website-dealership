@@ -25,12 +25,12 @@ interface JwtPayload {
 }
 
 export async function generateTokenPair(payload: TokenPayload): Promise<TokenPair> {
-  const accessToken = jwt.sign(payload, env.jwtAccessSecret, {
-    expiresIn: env.jwtAccessExpiresIn,
+  const accessToken = jwt.sign(payload, env.jwtAccessSecret as string, {
+    expiresIn: env.jwtAccessExpiresIn as string,
   });
 
-  const refreshToken = jwt.sign({ id: payload.id }, env.jwtRefreshSecret, {
-    expiresIn: env.jwtRefreshExpiresIn,
+  const refreshToken = jwt.sign({ id: payload.id }, env.jwtRefreshSecret as string, {
+    expiresIn: env.jwtRefreshExpiresIn as string,
   });
 
   const db = getDatabase();

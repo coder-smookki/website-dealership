@@ -272,7 +272,7 @@ export async function createCar(
 
 export async function updateCar(
   id: string,
-  data: Partial<CarDocument>
+  data: Partial<Omit<CarDocument, '_id' | 'ownerId' | 'createdBy'>> & { ownerId?: string }
 ): Promise<CarResponse> {
   if (!ObjectId.isValid(id)) throw new ValidationError('Invalid car ID');
   
@@ -281,16 +281,15 @@ export async function updateCar(
   const usersCollection = getUsersCollection(db);
   
   const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
+  delete updateData.ownerId;
   
-  // Денормализация при изменении владельца
   if (data.ownerId) {
-    const ownerIdStr = typeof data.ownerId === 'string' ? data.ownerId : data.ownerId.toString();
-    if (!ObjectId.isValid(ownerIdStr)) throw new ValidationError('Invalid owner ID');
+    if (!ObjectId.isValid(data.ownerId)) throw new ValidationError('Invalid owner ID');
     
-    const owner = await usersCollection.findOne({ _id: new ObjectId(ownerIdStr) });
+    const owner = await usersCollection.findOne({ _id: new ObjectId(data.ownerId) });
     if (!owner) throw new NotFoundError('Owner');
     
-    updateData.ownerId = new ObjectId(ownerIdStr);
+    updateData.ownerId = new ObjectId(data.ownerId);
     updateData.ownerName = owner.name;
     updateData.ownerEmail = owner.email;
     updateData.ownerPhone = owner.phone;
