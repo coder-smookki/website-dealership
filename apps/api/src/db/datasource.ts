@@ -1,12 +1,6 @@
 import { MongoClient, Db, MongoClientOptions } from 'mongodb';
 import { env } from '../config/env.js';
-
-export interface IDataSource {
-  getConnection(): Db;
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
-  isConnected(): boolean;
-}
+import { IDataSource } from '../domain/interfaces/IDataSource.js';
 
 export class MongoDataSource implements IDataSource {
   private static instance: MongoDataSource;

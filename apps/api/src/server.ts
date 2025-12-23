@@ -4,6 +4,8 @@ import { dbPlugin } from './plugins/db.js';
 import { loggerPlugin } from './plugins/logger.js';
 import { corsPlugin } from './plugins/cors.js';
 import { swaggerPlugin } from './plugins/swagger.js';
+import { securityPlugin } from './plugins/security.js';
+import { healthRoutes } from './routes/health.routes.js';
 import { publicRoutes } from './routes/public.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { ownerRoutes } from './routes/owner.routes.js';
@@ -21,6 +23,7 @@ async function buildServer() {
   // Plugins - loggerPlugin должен быть первым
   await fastify.register(loggerPlugin);
   await fastify.register(corsPlugin);
+  await fastify.register(securityPlugin);
   await fastify.register(formbody);
   await fastify.register(swaggerPlugin);
   await fastify.register(dbPlugin);
@@ -85,6 +88,7 @@ async function buildServer() {
   });
 
   // Routes
+  await fastify.register(healthRoutes);
   await fastify.register(publicRoutes);
   await fastify.register(authRoutes);
   await fastify.register(ownerRoutes);

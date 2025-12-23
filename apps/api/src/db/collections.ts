@@ -1,76 +1,14 @@
-import { Db, Collection, ObjectId } from 'mongodb';
+import { Db, Collection } from 'mongodb';
+import { UserEntity } from '../domain/entities/User.js';
+import { CarEntity } from '../domain/entities/Car.js';
+import { LeadEntity } from '../domain/entities/Lead.js';
+import { SettingsEntity } from '../domain/entities/Settings.js';
 
-// Document interfaces
-export interface UserDocument {
-  _id: ObjectId;
-  email: string;
-  passwordHash: string;
-  role: 'admin' | 'owner';
-  name?: string;
-  phone?: string;
-  isActive: boolean;
-  refreshToken?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CarDocument {
-  _id: ObjectId;
-  title: string;
-  brand: string;
-  model: string;
-  year: number;
-  mileage: number;
-  price: number;
-  currency: string;
-  fuelType: string;
-  transmission: string;
-  drive: string;
-  engine: string;
-  powerHp: number;
-  color: string;
-  description: string;
-  features: string[];
-  images: string[];
-  status: 'available' | 'reserved' | 'sold';
-  moderationStatus: 'pending' | 'approved' | 'rejected';
-  moderationComment?: string;
-  ownerId: ObjectId;
-  ownerName?: string;
-  ownerEmail?: string;
-  ownerPhone?: string;
-  createdBy: ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface LeadDocument {
-  _id: ObjectId;
-  carId: ObjectId;
-  carTitle?: string;
-  carBrand?: string;
-  carModel?: string;
-  carPrice?: number;
-  carImages?: string[];
-  name: string;
-  phone: string;
-  email?: string;
-  message?: string;
-  status: 'new' | 'in_progress' | 'closed';
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface SettingsDocument {
-  _id: ObjectId;
-  phone: string;
-  email: string;
-  address: string;
-  workHours: string;
-  slogan: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Re-export entities as documents for backward compatibility
+export type UserDocument = UserEntity;
+export type CarDocument = CarEntity;
+export type LeadDocument = LeadEntity;
+export type SettingsDocument = SettingsEntity;
 
 // Collection getters
 export function getUsersCollection(db: Db): Collection<UserDocument> {

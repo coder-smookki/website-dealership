@@ -1,63 +1,27 @@
 import { FastifyReply, FastifyRequest, FastifyInstance } from 'fastify';
 import { sendError } from './response.js';
+import {
+  DomainError,
+  ValidationError as DomainValidationError,
+  NotFoundError as DomainNotFoundError,
+  UnauthorizedError as DomainUnauthorizedError,
+  ForbiddenError as DomainForbiddenError,
+  ConflictError as DomainConflictError,
+  InfrastructureError,
+} from '../domain/errors/DomainErrors.js';
 
-export class AppError extends Error {
-  public readonly statusCode: number;
-  public readonly code: string;
-  public readonly isOperational: boolean;
+// Re-export domain errors for backward compatibility
+export const AppError = DomainError;
+export const ValidationError = DomainValidationError;
+export const NotFoundError = DomainNotFoundError;
+export const UnauthorizedError = DomainUnauthorizedError;
+export const ForbiddenError = DomainForbiddenError;
+export const ConflictError = DomainConflictError;
 
-  constructor(
-    statusCode: number,
-    message: string,
-    code?: string,
-    isOperational = true
-  ) {
-    super(message);
-    this.name = 'AppError';
-    this.statusCode = statusCode;
-    this.code = code || 'UNKNOWN_ERROR';
-    this.isOperational = isOperational;
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
+export { InfrastructureError };
 
-export class ValidationError extends AppError {
-  constructor(message: string, code = 'VALIDATION_ERROR') {
-    super(400, message, code, true);
-    this.name = 'ValidationError';
-  }
-}
-
-export class NotFoundError extends AppError {
-  constructor(resource: string, code = 'NOT_FOUND') {
-    super(404, `${resource} not found`, code, true);
-    this.name = 'NotFoundError';
-  }
-}
-
-export class UnauthorizedError extends AppError {
-  constructor(message = 'Unauthorized', code = 'UNAUTHORIZED') {
-    super(401, message, code, true);
-    this.name = 'UnauthorizedError';
-  }
-}
-
-export class ForbiddenError extends AppError {
-  constructor(message = 'Forbidden', code = 'FORBIDDEN') {
-    super(403, message, code, true);
-    this.name = 'ForbiddenError';
-  }
-}
-
-export class ConflictError extends AppError {
-  constructor(message: string, code = 'CONFLICT') {
-    super(409, message, code, true);
-    this.name = 'ConflictError';
-  }
-}
-
-function isAppError(error: unknown): error is AppError {
-  return error instanceof AppError;
+function isAppError(error: unknown): error is DomainError {
+  return error instanceof DomainError;
 }
 
 function isError(error: unknown): error is Error {

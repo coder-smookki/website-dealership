@@ -19,6 +19,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Устанавливаем wget для healthcheck
+RUN apk add --no-cache wget
+
 # Создаем пользователя для безопасности
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
