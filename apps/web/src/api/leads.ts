@@ -46,19 +46,19 @@ export const leadsApi = {
     email?: string;
     message?: string;
   }): Promise<Lead> => {
-    return http.post('/api/leads', data).then((res) => res.data);
+    return http.post('/leads', data).then((res) => res.data);
   },
 
   getLeads: (filters?: LeadFilters): Promise<LeadsResponse> => {
-    return http.get('/api/admin/leads', { params: filters }).then((res) => res.data);
+    return http.get('/admin/leads', { params: filters }).then((res) => res.data);
   },
 
   getLead: (id: string): Promise<Lead> => {
-    return http.get(`/api/admin/leads/${id}`).then((res) => res.data);
+    return http.get(`/admin/leads/${id}`).then((res) => res.data);
   },
 
   updateLeadStatus: (id: string, status: 'new' | 'in_progress' | 'closed'): Promise<Lead> => {
-    return http.patch(`/api/admin/leads/${id}`, { status }).then((res) => res.data);
+    return http.patch(`/admin/leads/${id}`, { status }).then((res) => res.data);
   },
 };
 

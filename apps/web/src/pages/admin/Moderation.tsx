@@ -107,7 +107,7 @@ export default function Moderation() {
                         {car.price.toLocaleString('ru-RU')} {car.currency}
                       </p>
                       <div className="car-owner">
-                        <strong>Владелец:</strong> {car.ownerId?.name || car.ownerId?.email}
+                        <strong>Владелец:</strong> {car.ownerName || car.ownerEmail || 'N/A'}
                       </div>
                       {car.moderationComment && (
                         <div className="moderation-comment">

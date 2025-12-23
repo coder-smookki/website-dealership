@@ -162,7 +162,7 @@ export default function CarsList() {
                          car.status === 'reserved' ? 'Забронирован' : 'В архиве'}
                       </span>
                     </td>
-                    <td>{car.ownerId?.name || car.ownerId?.email || 'N/A'}</td>
+                    <td>{car.ownerName || car.ownerEmail || 'N/A'}</td>
                     <td>
                       <div className="actions">
                         <Link to={`/admin/cars/${car._id}/edit`} className="edit-link">

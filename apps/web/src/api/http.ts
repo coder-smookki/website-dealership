@@ -34,7 +34,6 @@ async function refreshToken(): Promise<string | null> {
   }
 
   try {
-    // Используем axios напрямую, чтобы избежать рекурсии
     const response = await axios.post(`${API_BASE}/auth/refresh`, {
       refreshToken: refreshTokenValue,
     });

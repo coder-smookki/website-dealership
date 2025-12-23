@@ -13,11 +13,11 @@ export interface User {
 
 export const usersApi = {
   getUsers: (filters?: { role?: 'admin' | 'owner'; isActive?: boolean }): Promise<User[]> => {
-    return http.get('/api/admin/users', { params: filters }).then((res) => res.data);
+    return http.get('/admin/users', { params: filters }).then((res) => res.data);
   },
 
   getUser: (id: string): Promise<User> => {
-    return http.get(`/api/admin/users/${id}`).then((res) => res.data);
+    return http.get(`/admin/users/${id}`).then((res) => res.data);
   },
 
   createUser: (data: {
@@ -27,11 +27,11 @@ export const usersApi = {
     phone?: string;
     role?: 'admin' | 'owner';
   }): Promise<User> => {
-    return http.post('/api/admin/users', data).then((res) => res.data);
+    return http.post('/admin/users', data).then((res) => res.data);
   },
 
   updateUser: (id: string, data: { name?: string; phone?: string; isActive?: boolean }): Promise<User> => {
-    return http.patch(`/api/admin/users/${id}`, data).then((res) => res.data);
+    return http.patch(`/admin/users/${id}`, data).then((res) => res.data);
   },
 };
 

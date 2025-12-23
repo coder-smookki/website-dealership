@@ -23,20 +23,20 @@ export interface RegisterData {
 
 export const authApi = {
   register: (data: RegisterData): Promise<LoginResponse> => {
-    return http.post('/api/auth/register', data).then((res) => res.data);
+    return http.post('/auth/register', data).then((res) => res.data);
   },
 
   login: (email: string, password: string): Promise<LoginResponse> => {
-    return http.post('/api/auth/login', { email, password }).then((res) => res.data);
+    return http.post('/auth/login', { email, password }).then((res) => res.data);
   },
 
   me: (): Promise<User> => {
-    return http.get('/api/auth/me').then((res) => res.data);
+    return http.get('/auth/me').then((res) => res.data);
   },
 
   logout: async (): Promise<void> => {
     try {
-      await http.post('/api/auth/logout');
+      await http.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
