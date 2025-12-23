@@ -1,4 +1,4 @@
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 import { env } from '../config/env.js';
 import { getDatabase } from '../db/client.js';
@@ -25,15 +25,17 @@ interface JwtPayload {
 }
 
 export async function generateTokenPair(payload: TokenPayload): Promise<TokenPair> {
-  const accessTokenOptions: SignOptions = {
-    expiresIn: String(env.jwtAccessExpiresIn),
-  };
-  const accessToken = jwt.sign(payload, String(env.jwtAccessSecret), accessTokenOptions);
+  const accessToken = jwt.sign(
+    payload,
+    env.jwtAccessSecret,
+    { expiresIn: env.jwtAccessExpiresIn } as any
+  );
 
-  const refreshTokenOptions: SignOptions = {
-    expiresIn: String(env.jwtRefreshExpiresIn),
-  };
-  const refreshToken = jwt.sign({ id: payload.id }, String(env.jwtRefreshSecret), refreshTokenOptions);
+  const refreshToken = jwt.sign(
+    { id: payload.id },
+    env.jwtRefreshSecret,
+    { expiresIn: env.jwtRefreshExpiresIn } as any
+  );
 
   const db = getDatabase();
   const usersCollection = getUsersCollection(db);
@@ -51,7 +53,7 @@ export async function generateTokenPair(payload: TokenPayload): Promise<TokenPai
 }
 
 export async function verifyAccessToken(token: string): Promise<TokenPayload> {
-  const decoded = jwt.verify(token, String(env.jwtAccessSecret)) as JwtPayload;
+  const decoded = jwt.verify(token, env.jwtAccessSecret) as JwtPayload;
   
   if (!decoded.id || !decoded.role || !decoded.email) {
     throw new UnauthorizedError('Invalid token payload');
@@ -65,7 +67,7 @@ export async function verifyAccessToken(token: string): Promise<TokenPayload> {
 }
 
 export async function refreshAccessToken(refreshToken: string): Promise<TokenPair> {
-  const decoded = jwt.verify(refreshToken, String(env.jwtRefreshSecret)) as JwtPayload;
+  const decoded = jwt.verify(refreshToken, env.jwtRefreshSecret) as JwtPayload;
   
   if (!decoded.id || !ObjectId.isValid(decoded.id)) {
     throw new UnauthorizedError('Invalid refresh token');
