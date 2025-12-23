@@ -16,26 +16,24 @@ class ShutdownManager {
     }
 
     this.isShuttingDown = true;
-    console.log(`Received ${signal}, starting graceful shutdown...`);
+    console.log(`Получен сигнал ${signal}, начинается корректное завершение...`);
     
-    // Выполняем все зарегистрированные обработчики
     for (const handler of this.handlers) {
       try {
         await handler();
       } catch (error) {
-        console.error('Error during shutdown handler:', error);
+        console.error('Ошибка при выполнении обработчика завершения:', error);
       }
     }
     
-    // Закрываем БД в последнюю очередь
     try {
       await closeDatabase();
-      console.log('Database connection closed');
+      console.log('Соединение с базой данных закрыто');
     } catch (error) {
-      console.error('Error closing database:', error);
+      console.error('Ошибка закрытия базы данных:', error);
     }
     
-    console.log('Shutdown complete');
+    console.log('Завершение выполнено');
     process.exit(0);
   }
 }
@@ -49,14 +47,13 @@ export function registerShutdownHandler(handler: ShutdownHandler): void {
 process.on('SIGTERM', () => shutdownManager.shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdownManager.shutdown('SIGINT'));
 
-// Обработка необработанных ошибок
 process.on('unhandledRejection', (reason: unknown) => {
-  console.error('Unhandled Rejection:', reason);
+  console.error('Необработанное отклонение промиса:', reason);
   shutdownManager.shutdown('unhandledRejection');
 });
 
 process.on('uncaughtException', (error: Error) => {
-  console.error('Uncaught Exception:', error);
+  console.error('Необработанное исключение:', error);
   shutdownManager.shutdown('uncaughtException');
 });
 

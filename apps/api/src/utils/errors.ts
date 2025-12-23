@@ -10,7 +10,6 @@ import {
   InfrastructureError,
 } from '../domain/errors/DomainErrors.js';
 
-// Re-export domain errors for backward compatibility
 export const AppError = DomainError;
 export const ValidationError = DomainValidationError;
 export const NotFoundError = DomainNotFoundError;
@@ -38,13 +37,12 @@ export function handleError(
   const duration = request?.startTime ? Date.now() - request.startTime : undefined;
 
   if (isAppError(error)) {
-    // Операционные ошибки логируем на уровне warn
     if (fastify && request && fastify.logger) {
       fastify.logger.warn({
         request_id: request.requestId,
         method: request.method,
         path: request.url,
-        msg: 'Request error',
+        msg: 'Ошибка запроса',
         error_type: error.name,
         error_code: error.code,
         error_message: error.message,
@@ -57,12 +55,11 @@ export function handleError(
   }
 
   if (isError(error)) {
-    // Неоперационные ошибки логируем на уровне error с полным stack trace
     const errorLog = {
       request_id: request?.requestId || 'unknown',
       method: request?.method || 'unknown',
       path: request?.url || 'unknown',
-      msg: 'Internal server error',
+      msg: 'Внутренняя ошибка сервера',
       error_type: error.name,
       error_message: error.message,
       error_stack: error.stack,
@@ -73,22 +70,20 @@ export function handleError(
     if (fastify && fastify.logger) {
       fastify.logger.error(errorLog);
     } else {
-      // Fallback если нет доступа к fastify/request
-      console.error('Error:', errorLog);
+      console.error('Ошибка:', errorLog);
     }
     
     const message = process.env.NODE_ENV === 'development' 
       ? error.message 
-      : 'Internal server error';
+      : 'Внутренняя ошибка сервера';
     return sendError(reply, message, 500, 'INTERNAL_ERROR');
   }
 
-  // Неизвестный тип ошибки
   const unknownErrorLog = {
     request_id: request?.requestId || 'unknown',
     method: request?.method || 'unknown',
     path: request?.url || 'unknown',
-    msg: 'Unknown error type',
+    msg: 'Неизвестный тип ошибки',
     error_type: 'UnknownError',
     error_data: String(error),
     status_code: 500,
@@ -98,9 +93,9 @@ export function handleError(
   if (fastify && fastify.logger) {
     fastify.logger.error(unknownErrorLog);
   } else {
-    console.error('Unknown error:', unknownErrorLog);
+    console.error('Неизвестная ошибка:', unknownErrorLog);
   }
   
-  return sendError(reply, 'Internal server error', 500, 'UNKNOWN_ERROR');
+  return sendError(reply, 'Внутренняя ошибка сервера', 500, 'UNKNOWN_ERROR');
 }
 

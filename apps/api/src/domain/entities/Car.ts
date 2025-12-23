@@ -1,9 +1,4 @@
 import { ObjectId } from 'mongodb';
-
-/**
- * Domain Entity - Car
- * Represents a car listing in the dealership
- */
 export interface CarEntity {
   _id: ObjectId;
   title: string;
@@ -34,9 +29,6 @@ export interface CarEntity {
   updatedAt: Date;
 }
 
-/**
- * Car creation DTO
- */
 export interface CreateCarDTO {
   title: string;
   brand: string;
@@ -57,9 +49,6 @@ export interface CreateCarDTO {
   ownerId: string;
 }
 
-/**
- * Car update DTO
- */
 export interface UpdateCarDTO {
   title?: string;
   brand?: string;
@@ -80,9 +69,6 @@ export interface UpdateCarDTO {
   status?: 'available' | 'reserved' | 'sold';
 }
 
-/**
- * Car filters DTO
- */
 export interface CarFiltersDTO {
   q?: string;
   brand?: string;

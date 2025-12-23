@@ -1,9 +1,4 @@
 import { ObjectId } from 'mongodb';
-
-/**
- * Domain Entity - Lead
- * Represents a customer inquiry about a car
- */
 export interface LeadEntity {
   _id: ObjectId;
   carId: ObjectId;
@@ -21,9 +16,6 @@ export interface LeadEntity {
   updatedAt: Date;
 }
 
-/**
- * Lead creation DTO
- */
 export interface CreateLeadDTO {
   carId: string;
   name: string;
@@ -32,9 +24,6 @@ export interface CreateLeadDTO {
   message?: string;
 }
 
-/**
- * Lead update DTO
- */
 export interface UpdateLeadDTO {
   status?: 'new' | 'in_progress' | 'closed';
 }

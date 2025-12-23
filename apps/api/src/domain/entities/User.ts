@@ -1,9 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-/**
- * Domain Entity - User
- * Represents a user in the system (admin or car owner)
- */
 export interface UserEntity {
   _id: ObjectId;
   email: string;
@@ -17,9 +13,6 @@ export interface UserEntity {
   updatedAt: Date;
 }
 
-/**
- * User creation DTO
- */
 export interface CreateUserDTO {
   email: string;
   password: string;
@@ -28,18 +21,12 @@ export interface CreateUserDTO {
   phone?: string;
 }
 
-/**
- * User update DTO
- */
 export interface UpdateUserDTO {
   name?: string;
   phone?: string;
   isActive?: boolean;
 }
 
-/**
- * User public representation (without sensitive data)
- */
 export interface UserPublic {
   id: string;
   email: string;

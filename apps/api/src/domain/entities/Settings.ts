@@ -1,9 +1,4 @@
 import { ObjectId } from 'mongodb';
-
-/**
- * Domain Entity - Settings
- * Represents dealership settings
- */
 export interface SettingsEntity {
   _id: ObjectId;
   phone: string;
@@ -15,9 +10,6 @@ export interface SettingsEntity {
   updatedAt: Date;
 }
 
-/**
- * Settings update DTO
- */
 export interface UpdateSettingsDTO {
   phone?: string;
   email?: string;

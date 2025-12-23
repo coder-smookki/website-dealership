@@ -1,8 +1,3 @@
-/**
- * Domain Layer - Error Classes
- * These errors represent business logic violations
- */
-
 export class DomainError extends Error {
   public readonly statusCode: number;
   public readonly code: string;
@@ -32,20 +27,20 @@ export class ValidationError extends DomainError {
 
 export class NotFoundError extends DomainError {
   constructor(resource: string, code = 'NOT_FOUND') {
-    super(404, `${resource} not found`, code, true);
+    super(404, `${resource} не найден`, code, true);
     this.name = 'NotFoundError';
   }
 }
 
 export class UnauthorizedError extends DomainError {
-  constructor(message = 'Unauthorized', code = 'UNAUTHORIZED') {
+  constructor(message = 'Не авторизован', code = 'UNAUTHORIZED') {
     super(401, message, code, true);
     this.name = 'UnauthorizedError';
   }
 }
 
 export class ForbiddenError extends DomainError {
-  constructor(message = 'Forbidden', code = 'FORBIDDEN') {
+  constructor(message = 'Доступ запрещён', code = 'FORBIDDEN') {
     super(403, message, code, true);
     this.name = 'ForbiddenError';
   }

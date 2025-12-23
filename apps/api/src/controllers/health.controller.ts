@@ -19,10 +19,6 @@ interface HealthCheckResponse {
   };
 }
 
-/**
- * Health check endpoint для проверки состояния сервиса
- * Используется для liveness probe (жив ли сервис)
- */
 export async function healthCheck(
   request: FastifyRequest,
   reply: FastifyReply
@@ -32,7 +28,6 @@ export async function healthCheck(
   try {
     const db = getDatabase();
     
-    // Пингуем БД для проверки соединения
     const dbStartTime = Date.now();
     await db.admin().ping();
     const dbResponseTime = Date.now() - dbStartTime;
@@ -52,8 +47,8 @@ export async function healthCheck(
           responseTime: dbResponseTime,
         },
         memory: {
-          used: Math.round(usedMemory / 1024 / 1024), // MB
-          total: Math.round(totalMemory / 1024 / 1024), // MB
+          used: Math.round(usedMemory / 1024 / 1024),
+          total: Math.round(totalMemory / 1024 / 1024),
           percentUsed,
         },
       },
@@ -78,14 +73,10 @@ export async function healthCheck(
       },
     };
     
-    return sendError(reply, 'Service unhealthy', 503, 'SERVICE_UNHEALTHY');
+    return sendError(reply, 'Сервис недоступен', 503, 'SERVICE_UNHEALTHY');
   }
 }
 
-/**
- * Readiness check endpoint для проверки готовности принимать запросы
- * Используется для readiness probe (готов ли сервис обрабатывать трафик)
- */
 export async function readinessCheck(
   request: FastifyRequest,
   reply: FastifyReply
@@ -96,14 +87,10 @@ export async function readinessCheck(
     
     return sendSuccess(reply, { status: 'ready' }, 200);
   } catch (error) {
-    return sendError(reply, 'Service not ready', 503, 'SERVICE_NOT_READY');
+    return sendError(reply, 'Сервис не готов', 503, 'SERVICE_NOT_READY');
   }
 }
 
-/**
- * Liveness check endpoint для проверки живости процесса
- * Используется для liveness probe (нужен ли рестарт)
- */
 export async function livenessCheck(
   request: FastifyRequest,
   reply: FastifyReply
