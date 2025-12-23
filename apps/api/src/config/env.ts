@@ -21,5 +21,5 @@ export const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   tunnelUrl: process.env.TUNNEL_URL || '',
-} as const;
+};
 
