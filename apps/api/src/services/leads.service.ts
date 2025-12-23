@@ -4,12 +4,12 @@ import { getLeadsCollection, getCarsCollection, LeadDocument } from '../db/colle
 import { ValidationError, NotFoundError } from '../utils/errors.js';
 
 export interface LeadFilters {
-  page?: number;
-  limit?: number;
+  page?: number | string;
+  limit?: number | string;
   status?: 'new' | 'in_progress' | 'closed';
   carId?: string;
   q?: string;
-  sort?: string;
+  sort?: 'createdAt' | '-createdAt';
 }
 
 interface LeadResponse {
@@ -48,15 +48,27 @@ function mapLeadToResponse(lead: LeadDocument): LeadResponse {
   };
 }
 
+/** Приводит query-значения к безопасным положительным integer */
+function toPositiveInt(value: unknown, fallback: number): number {
+  if (value === undefined || value === null || value === '') return fallback;
+
+  const n =
+    typeof value === 'string'
+      ? Number.parseInt(value, 10)
+      : typeof value === 'number'
+        ? value
+        : Number(value);
+
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) return fallback;
+  return n;
+}
+
 export async function getLeads(filters: LeadFilters = {}) {
-  const {
-    page = 1,
-    limit = 20,
-    status,
-    carId,
-    q,
-    sort = 'createdAt',
-  } = filters;
+  const page = toPositiveInt(filters.page, 1);
+  const rawLimit = toPositiveInt(filters.limit, 20);
+  const limit = Math.min(rawLimit, 100); // защита от огромных лимитов
+
+  const { status, carId, q, sort = '-createdAt' } = filters;
 
   const db = getDatabase();
   const leadsCollection = getLeadsCollection(db);
@@ -64,7 +76,7 @@ export async function getLeads(filters: LeadFilters = {}) {
   const query: Record<string, unknown> = {};
 
   if (status) query.status = status;
-  
+
   if (carId) {
     if (!ObjectId.isValid(carId)) throw new ValidationError('Invalid car ID');
     query.carId = new ObjectId(carId);
@@ -78,13 +90,21 @@ export async function getLeads(filters: LeadFilters = {}) {
     ];
   }
 
+  // ВАЖНО: реальная пагинация в Mongo — сортируем в БД, потом skip/limit в БД
   const skip = (page - 1) * limit;
-  const sortQuery: { createdAt: 1 | -1 } = sort === 'createdAt' ? { createdAt: -1 } : { createdAt: 1 };
+
+  // Стабильная сортировка: createdAt + _id (иначе при одинаковом createdAt могут быть дубли/пропуски между страницами)
+  const direction = sort === 'createdAt' ? 1 : -1;
+  const sortQuery: Record<string, 1 | -1> = { createdAt: direction, _id: direction };
 
   const [leads, total] = await Promise.all([
     leadsCollection.find(query).sort(sortQuery).skip(skip).limit(limit).toArray(),
     leadsCollection.countDocuments(query),
   ]);
+
+  const pages = Math.max(1, Math.ceil(total / limit));
+  const hasPrev = page > 1;
+  const hasNext = page < pages;
 
   return {
     leads: leads.map(mapLeadToResponse),
@@ -92,20 +112,24 @@ export async function getLeads(filters: LeadFilters = {}) {
       page,
       limit,
       total,
-      pages: Math.ceil(total / limit),
+      pages,
+      hasPrev,
+      hasNext,
+      prevPage: hasPrev ? page - 1 : null,
+      nextPage: hasNext ? page + 1 : null,
     },
   };
 }
 
 export async function getLeadById(id: string): Promise<LeadResponse> {
   if (!ObjectId.isValid(id)) throw new ValidationError('Invalid lead ID');
-  
+
   const db = getDatabase();
   const leadsCollection = getLeadsCollection(db);
   const lead = await leadsCollection.findOne({ _id: new ObjectId(id) });
-  
+
   if (!lead) throw new NotFoundError('Lead');
-  
+
   return mapLeadToResponse(lead);
 }
 
@@ -117,15 +141,15 @@ export async function createLead(data: {
   message?: string;
 }): Promise<LeadResponse> {
   if (!ObjectId.isValid(data.carId)) throw new ValidationError('Invalid car ID');
-  
+
   const db = getDatabase();
   const leadsCollection = getLeadsCollection(db);
   const carsCollection = getCarsCollection(db);
-  
+
   // Денормализация: получаем данные автомобиля
   const car = await carsCollection.findOne({ _id: new ObjectId(data.carId) });
   if (!car) throw new NotFoundError('Car');
-  
+
   const now = new Date();
   const lead: Omit<LeadDocument, '_id'> = {
     carId: new ObjectId(data.carId),
@@ -142,9 +166,9 @@ export async function createLead(data: {
     createdAt: now,
     updatedAt: now,
   } as Omit<LeadDocument, '_id'>;
-  
+
   const result = await leadsCollection.insertOne(lead as LeadDocument);
-  
+
   return mapLeadToResponse({ ...lead, _id: result.insertedId } as LeadDocument);
 }
 
@@ -153,16 +177,17 @@ export async function updateLeadStatus(
   status: 'new' | 'in_progress' | 'closed'
 ): Promise<LeadResponse> {
   if (!ObjectId.isValid(id)) throw new ValidationError('Invalid lead ID');
-  
+
   const db = getDatabase();
   const leadsCollection = getLeadsCollection(db);
+
   const result = await leadsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: { status, updatedAt: new Date() } },
     { returnDocument: 'after' }
   );
-  
+
   if (!result) throw new NotFoundError('Lead');
-  
+
   return mapLeadToResponse(result);
 }
