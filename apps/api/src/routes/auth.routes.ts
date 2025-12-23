@@ -19,8 +19,9 @@ export async function authRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, register as any);
+  }, register);
 
+  // Вход
   fastify.post('/api/auth/login', {
     schema: {
       tags: ['Auth'],
@@ -34,8 +35,9 @@ export async function authRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, login as any);
+  }, login);
 
+  // Обновление токена
   fastify.post('/api/auth/refresh', {
     schema: {
       tags: ['Auth'],
@@ -48,8 +50,9 @@ export async function authRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, refresh as any);
+  }, refresh);
 
+  // Выход
   fastify.post('/api/auth/logout', {
     schema: {
       tags: ['Auth'],
@@ -57,8 +60,9 @@ export async function authRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware],
-  }, logout as any);
+  }, logout);
 
+  // Текущий пользователь
   fastify.get('/api/auth/me', {
     schema: {
       tags: ['Auth'],
@@ -66,6 +70,6 @@ export async function authRoutes(fastify: FastifyInstance) {
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware],
-  }, me as any);
+  }, me);
 }
 

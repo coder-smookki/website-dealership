@@ -77,8 +77,8 @@ async function buildServer() {
     return handleError(error, reply, request, fastify);
   });
 
-  await fastify.register(publicRoutes);
   await fastify.register(healthRoutes);
+  await fastify.register(publicRoutes);
   await fastify.register(authRoutes);
   await fastify.register(ownerRoutes);
   await fastify.register(adminRoutes);
@@ -99,13 +99,7 @@ async function start() {
       server.logger.info(`Swagger UI доступен по адресу http://${env.host}:${env.port}/docs`);
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    if (error instanceof Error && error.stack) {
-      console.error('Ошибка запуска сервера:', errorMessage);
-      console.error('Stack trace:', error.stack);
-    } else {
-      console.error('Ошибка запуска сервера:', errorMessage);
-    }
+    console.error('Ошибка запуска сервера:', error);
     process.exit(1);
   }
 }

@@ -4,14 +4,7 @@ import { createLeadHandler } from '../controllers/leads.controller.js';
 import { getSettingsHandler } from '../controllers/settings.controller.js';
 
 export async function publicRoutes(fastify: FastifyInstance) {
-  fastify.get('/', async (request, reply) => {
-    return { message: 'SMK Dealership API', version: '1.0.0', status: 'ok' };
-  });
-
-  fastify.get('/api', async (request, reply) => {
-    return { message: 'SMK Dealership API', version: '1.0.0', status: 'ok' };
-  });
-
+  // Cars
   fastify.get('/api/cars', {
     schema: {
       tags: ['Public'],
@@ -35,7 +28,7 @@ export async function publicRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, listCars as any);
+  }, listCars);
 
   fastify.get('/api/cars/:id', {
     schema: {
@@ -48,7 +41,7 @@ export async function publicRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, getCar as any);
+  }, getCar);
 
   // Settings
   fastify.get('/api/settings', {
@@ -56,7 +49,7 @@ export async function publicRoutes(fastify: FastifyInstance) {
       tags: ['Public'],
       description: 'Get site settings',
     },
-  }, getSettingsHandler as any);
+  }, getSettingsHandler);
 
   // Leads
   fastify.post('/api/leads', {
@@ -75,6 +68,6 @@ export async function publicRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, createLeadHandler as any);
+  }, createLeadHandler);
 }
 

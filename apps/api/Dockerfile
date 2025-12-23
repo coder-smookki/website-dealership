@@ -1,22 +1,27 @@
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
 COPY apps/api/package*.json ./
+
 RUN npm install && npm cache clean --force
 
 COPY apps/api/src ./src
 COPY apps/api/tsconfig.json ./tsconfig.json
+
 RUN npm run build
 
-FROM node:20-alpine
+FROM node:25-alpine
 
 WORKDIR /app
+
+RUN apk add --no-cache curl
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
 COPY apps/api/package*.json ./
+
 RUN npm install --only=production && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist

@@ -53,7 +53,7 @@ export default function CarForm({ onSubmit, users, initialData, loading }: CarFo
         features: initialData.features || [],
         images: initialData.images || [],
         status: initialData.status || 'available',
-        ownerId: initialData.ownerId || '',
+        ownerId: initialData.ownerId?._id || initialData.ownerId || '',
       });
     }
   }, [initialData]);

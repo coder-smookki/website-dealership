@@ -7,10 +7,17 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: car-shop
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-changeme123}
     volumes:
       - mongodb_data:/data/db
     networks:
       - car-shop-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/car-shop -u ${MONGO_ROOT_USERNAME:-admin} -p ${MONGO_ROOT_PASSWORD:-changeme123} --authenticationDatabase admin --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
@@ -24,26 +31,36 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       API_PORT: 3001
       API_HOST: 0.0.0.0
-      MONGODB_URI: mongodb://mongodb:27017/car-shop
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-secret-key-change-in-production-access-token-min-32-chars}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-secret-key-change-in-production-refresh-token-min-32-chars}
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-changeme123}@mongodb:27017/car-shop?authSource=admin
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-token-change-in-production-min-32-chars}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-token-change-in-production-min-32-chars}
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
       TUNNEL_URL: ${TUNNEL_URL:-}
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - car-shop-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"require('http').get('http://localhost:3001',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
 
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+        VITE_API_URL: ${VITE_API_URL:-}
     container_name: car-shop-web
     restart: unless-stopped
     ports:
@@ -52,6 +69,12 @@ services:
       - api
     networks:
       - car-shop-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   mongodb_data:
