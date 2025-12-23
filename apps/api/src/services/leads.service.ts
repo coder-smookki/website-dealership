@@ -1,6 +1,7 @@
-import { Lead } from '../models/Lead.js';
-import { AppError } from '../utils/errors.js';
 import { Types } from 'mongoose';
+import { Lead } from '../models/Lead.js';
+import { Car } from '../models/Car.js';
+import { ValidationError, NotFoundError } from '../utils/errors.js';
 
 export interface LeadFilters {
   page?: number;
@@ -21,13 +22,16 @@ export async function getLeads(filters: LeadFilters = {}) {
     sort = 'createdAt',
   } = filters;
 
-  const query: any = {};
+  const query: Record<string, unknown> = {};
 
   if (status) {
     query.status = status;
   }
 
   if (carId) {
+    if (!Types.ObjectId.isValid(carId)) {
+      throw new ValidationError('Invalid car ID');
+    }
     query.carId = new Types.ObjectId(carId);
   }
 
@@ -44,7 +48,6 @@ export async function getLeads(filters: LeadFilters = {}) {
 
   const [leads, total] = await Promise.all([
     Lead.find(query)
-      .populate('carId', 'title brand model price images')
       .sort(sortQuery)
       .skip(skip)
       .limit(limit)
@@ -53,7 +56,22 @@ export async function getLeads(filters: LeadFilters = {}) {
   ]);
 
   return {
-    leads,
+    leads: leads.map(lead => ({
+      _id: lead._id.toString(),
+      carId: lead.carId.toString(),
+      carTitle: lead.carTitle,
+      carBrand: lead.carBrand,
+      carModel: lead.carModel,
+      carPrice: lead.carPrice,
+      carImages: lead.carImages,
+      name: lead.name,
+      phone: lead.phone,
+      email: lead.email,
+      message: lead.message,
+      status: lead.status,
+      createdAt: lead.createdAt,
+      updatedAt: lead.updatedAt,
+    })),
     pagination: {
       page,
       limit,
@@ -64,13 +82,31 @@ export async function getLeads(filters: LeadFilters = {}) {
 }
 
 export async function getLeadById(id: string) {
-  const lead = await Lead.findById(id)
-    .populate('carId', 'title brand model price images')
-    .lean();
-  if (!lead) {
-    throw new AppError(404, 'Lead not found');
+  if (!Types.ObjectId.isValid(id)) {
+    throw new ValidationError('Invalid lead ID');
   }
-  return lead;
+  
+  const lead = await Lead.findById(id).lean();
+  if (!lead) {
+    throw new NotFoundError('Lead');
+  }
+  
+  return {
+    _id: lead._id.toString(),
+    carId: lead.carId.toString(),
+    carTitle: lead.carTitle,
+    carBrand: lead.carBrand,
+    carModel: lead.carModel,
+    carPrice: lead.carPrice,
+    carImages: lead.carImages,
+    name: lead.name,
+    phone: lead.phone,
+    email: lead.email,
+    message: lead.message,
+    status: lead.status,
+    createdAt: lead.createdAt,
+    updatedAt: lead.updatedAt,
+  };
 }
 
 export async function createLead(data: {
@@ -80,27 +116,80 @@ export async function createLead(data: {
   email?: string;
   message?: string;
 }) {
+  if (!Types.ObjectId.isValid(data.carId)) {
+    throw new ValidationError('Invalid car ID');
+  }
+  
+  // Получаем данные автомобиля для денормализации
+  const car = await Car.findById(data.carId).lean();
+  if (!car) {
+    throw new NotFoundError('Car');
+  }
+  
   const lead = await Lead.create({
-    ...data,
     carId: new Types.ObjectId(data.carId),
+    carTitle: car.title,
+    carBrand: car.brand,
+    carModel: car.model,
+    carPrice: car.price,
+    carImages: car.images,
+    name: data.name,
+    phone: data.phone,
+    email: data.email,
+    message: data.message,
+    status: 'new',
   });
-  return lead.populate('carId', 'title brand model price images');
+  
+  return {
+    _id: lead._id.toString(),
+    carId: lead.carId.toString(),
+    carTitle: lead.carTitle,
+    carBrand: lead.carBrand,
+    carModel: lead.carModel,
+    carPrice: lead.carPrice,
+    carImages: lead.carImages,
+    name: lead.name,
+    phone: lead.phone,
+    email: lead.email,
+    message: lead.message,
+    status: lead.status,
+    createdAt: lead.createdAt,
+    updatedAt: lead.updatedAt,
+  };
 }
 
 export async function updateLeadStatus(
   id: string,
   status: 'new' | 'in_progress' | 'closed'
 ) {
-  const lead = await Lead.findByIdAndUpdate(
-    id,
-    { status },
-    { new: true }
-  ).populate('carId', 'title brand model price images');
-  
-  if (!lead) {
-    throw new AppError(404, 'Lead not found');
+  if (!Types.ObjectId.isValid(id)) {
+    throw new ValidationError('Invalid lead ID');
   }
   
-  return lead;
+  const lead = await Lead.findByIdAndUpdate(
+    id,
+    { $set: { status } },
+    { new: true, runValidators: true }
+  ).lean();
+  
+  if (!lead) {
+    throw new NotFoundError('Lead');
+  }
+  
+  return {
+    _id: lead._id.toString(),
+    carId: lead.carId.toString(),
+    carTitle: lead.carTitle,
+    carBrand: lead.carBrand,
+    carModel: lead.carModel,
+    carPrice: lead.carPrice,
+    carImages: lead.carImages,
+    name: lead.name,
+    phone: lead.phone,
+    email: lead.email,
+    message: lead.message,
+    status: lead.status,
+    createdAt: lead.createdAt,
+    updatedAt: lead.updatedAt,
+  };
 }
-

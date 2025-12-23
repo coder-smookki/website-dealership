@@ -21,6 +21,9 @@ export interface ICar extends Document {
   moderationStatus: 'pending' | 'approved' | 'rejected';
   moderationComment?: string;
   ownerId: Types.ObjectId;
+  ownerName?: string;
+  ownerEmail?: string;
+  ownerPhone?: string;
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -113,6 +116,19 @@ const CarSchema = new Schema<ICar>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    ownerName: {
+      type: String,
+      trim: true,
+    },
+    ownerEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    ownerPhone: {
+      type: String,
+      trim: true,
     },
     createdBy: {
       type: Schema.Types.ObjectId,

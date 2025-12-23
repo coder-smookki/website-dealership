@@ -4,7 +4,8 @@ import { User } from '../api/auth';
 interface AuthState {
   user: User | null;
   token: string | null;
-  setAuth: (user: User, token: string) => void;
+  refreshToken: string | null;
+  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
   clearAuth: () => void;
   isAuthenticated: () => boolean;
   isAdmin: () => boolean;
@@ -14,17 +15,20 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
+  refreshToken: null,
 
-  setAuth: (user, token) => {
+  setAuth: (user, accessToken, refreshToken) => {
     localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('token', token);
-    set({ user, token });
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    set({ user, token: accessToken, refreshToken });
   },
 
   clearAuth: () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    set({ user: null, token: null });
+    localStorage.removeItem('refreshToken');
+    set({ user: null, token: null, refreshToken: null });
   },
 
   isAuthenticated: () => {
@@ -43,7 +47,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 // Инициализация из localStorage
 const storedUser = localStorage.getItem('user');
 const storedToken = localStorage.getItem('token');
-if (storedUser && storedToken) {
-  useAuthStore.getState().setAuth(JSON.parse(storedUser), storedToken);
+const storedRefreshToken = localStorage.getItem('refreshToken');
+if (storedUser && storedToken && storedRefreshToken) {
+  useAuthStore.getState().setAuth(JSON.parse(storedUser), storedToken, storedRefreshToken);
 }
 

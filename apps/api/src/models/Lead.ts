@@ -2,6 +2,11 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface ILead extends Document {
   carId: Types.ObjectId;
+  carTitle?: string;
+  carBrand?: string;
+  carModel?: string;
+  carPrice?: number;
+  carImages?: string[];
   name: string;
   phone: string;
   email?: string;
@@ -17,6 +22,25 @@ const LeadSchema = new Schema<ILead>(
       type: Schema.Types.ObjectId,
       ref: 'Car',
       required: true,
+    },
+    carTitle: {
+      type: String,
+      trim: true,
+    },
+    carBrand: {
+      type: String,
+      trim: true,
+    },
+    carModel: {
+      type: String,
+      trim: true,
+    },
+    carPrice: {
+      type: Number,
+    },
+    carImages: {
+      type: [String],
+      default: [],
     },
     name: {
       type: String,

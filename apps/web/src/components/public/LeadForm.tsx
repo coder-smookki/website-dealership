@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { sanitizeInput } from '../../utils/sanitize';
 import './LeadForm.css';
 
 interface LeadFormProps {
@@ -22,10 +23,10 @@ export default function LeadForm({ onSubmit, onCancel }: LeadFormProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onSubmit({
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email || undefined,
-      message: formData.message || undefined,
+      name: sanitizeInput(formData.name),
+      phone: sanitizeInput(formData.phone),
+      email: formData.email ? sanitizeInput(formData.email) : undefined,
+      message: formData.message ? sanitizeInput(formData.message) : undefined,
     });
   };
 

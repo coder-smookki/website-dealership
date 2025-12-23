@@ -21,12 +21,7 @@
     "lint:fix:web": "cd apps/web && npm run lint:fix",
     "format": "npm run format:api && npm run format:web",
     "format:api": "cd apps/api && npm run format",
-    "format:web": "cd apps/web && npm run format",
-    "docker:build": "docker-compose build",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:restart": "docker-compose restart"
+    "format:web": "cd apps/web && npm run format"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

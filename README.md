@@ -278,6 +278,34 @@ docker-compose down
 docker-compose down -v
 ```
 
+#### Запуск с туннелем (для доступа из интернета)
+
+Для доступа к приложению из интернета используйте туннель (ngrok, cloudflared):
+
+**Вариант 1: Автоматический скрипт (рекомендуется)**
+
+```bash
+./start-with-tunnel.sh
+```
+
+**Вариант 2: Вручную с ngrok**
+
+1. Установите ngrok: https://ngrok.com/download
+2. Создайте `ngrok.yml` на основе `ngrok.yml.example`
+3. Запустите Docker: `docker-compose up -d`
+4. Запустите ngrok: `ngrok start --all --config ngrok.yml`
+5. Обновите `.env` с URL туннелей и пересоберите веб: `docker-compose up --build -d web`
+
+**Вариант 3: Вручную с cloudflared**
+
+1. Установите cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/
+2. Запустите Docker: `docker-compose up -d`
+3. В первом терминале: `cloudflared tunnel --url http://localhost:3000`
+4. Во втором терминале: `cloudflared tunnel --url http://localhost:3001`
+5. Обновите `.env` с URL туннелей и пересоберите веб: `docker-compose up --build -d web`
+
+Подробная инструкция: см. [TUNNEL.md](./TUNNEL.md)
+
 #### Сборка образов
 
 ```bash

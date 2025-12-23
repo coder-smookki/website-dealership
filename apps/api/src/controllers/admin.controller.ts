@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createUser, getUserById, updateUser, getUsers } from '../services/users.service.js';
+import { getUserById, updateUser, getUsers } from '../services/users.service.js';
 import { createUserSchema, updateUserSchema } from '../utils/validate.js';
 import { handleError } from '../utils/errors.js';
+import { sendSuccess } from '../utils/response.js';
 import { createUser as createUserService } from '../services/auth.service.js';
-import bcrypt from 'bcryptjs';
 
 export async function listUsers(
   request: FastifyRequest<{ Querystring: { role?: 'admin' | 'owner'; isActive?: boolean } }>,
@@ -11,7 +11,7 @@ export async function listUsers(
 ) {
   try {
     const users = await getUsers(request.query);
-    return reply.send(users);
+    return sendSuccess(reply, users);
   } catch (error) {
     return handleError(error, reply);
   }
@@ -23,14 +23,14 @@ export async function getUser(
 ) {
   try {
     const user = await getUserById(request.params.id);
-    return reply.send(user);
+    return sendSuccess(reply, user);
   } catch (error) {
     return handleError(error, reply);
   }
 }
 
 export async function createUserHandler(
-  request: FastifyRequest<{ Body: any }>,
+  request: FastifyRequest<{ Body: unknown }>,
   reply: FastifyReply
 ) {
   try {
@@ -42,20 +42,20 @@ export async function createUserHandler(
       data.name,
       data.phone
     );
-    return reply.code(201).send(user);
+    return sendSuccess(reply, user, 201);
   } catch (error) {
     return handleError(error, reply);
   }
 }
 
 export async function updateUserHandler(
-  request: FastifyRequest<{ Params: { id: string }; Body: any }>,
+  request: FastifyRequest<{ Params: { id: string }; Body: unknown }>,
   reply: FastifyReply
 ) {
   try {
     const data = updateUserSchema.parse(request.body);
     const user = await updateUser(request.params.id, data);
-    return reply.send(user);
+    return sendSuccess(reply, user);
   } catch (error) {
     return handleError(error, reply);
   }

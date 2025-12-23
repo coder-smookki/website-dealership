@@ -45,7 +45,7 @@ export default function Footer() {
           <Link to="/contacts">Контакты</Link>
         </div>
         <div className="footer-section">
-          <p className="copyright">© 2024 SMK Dealership. Все права защищены.</p>
+          <p className="copyright">© 2025 SMK Dealership. Все права защищены.</p>
         </div>
       </div>
     </footer>

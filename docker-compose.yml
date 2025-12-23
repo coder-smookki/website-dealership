@@ -7,12 +7,14 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: car-shop
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-changeme}
     volumes:
       - mongodb_data:/data/db
     networks:
       - car-shop-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/car-shop --quiet
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/car-shop -u ${MONGO_ROOT_USERNAME:-admin} -p ${MONGO_ROOT_PASSWORD:-changeme} --authenticationDatabase admin --quiet
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,23 +28,25 @@ services:
     ports:
       - "3001:3001"
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-production}
       API_PORT: 3001
       API_HOST: 0.0.0.0
-      MONGODB_URI: mongodb://mongodb:27017/car-shop
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-changeme}@mongodb:27017/car-shop?authSource=admin
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
       JWT_EXPIRES_IN: 7d
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      TUNNEL_URL: ${TUNNEL_URL:-}
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
       - car-shop-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/settings', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
 
   web:
     build:
@@ -64,6 +68,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
 
 volumes:
   mongodb_data:

@@ -9,7 +9,7 @@ import { authRoutes } from './routes/auth.routes.js';
 import { ownerRoutes } from './routes/owner.routes.js';
 import { adminRoutes } from './routes/admin.routes.js';
 import formbody from '@fastify/formbody';
-import jwt from '@fastify/jwt';
+import { registerShutdownHandler } from './shutdown.js';
 
 async function buildServer() {
   const fastify = Fastify({
@@ -20,25 +20,8 @@ async function buildServer() {
   await fastify.register(corsPlugin);
   await fastify.register(formbody);
   await fastify.register(loggerPlugin);
-  
-  // Регистрируем JWT плагин напрямую (без обертки)
-  await fastify.register(jwt, {
-    secret: env.jwtSecret,
-    sign: {
-      expiresIn: env.jwtExpiresIn,
-    },
-  });
-  
   await fastify.register(swaggerPlugin);
   await fastify.register(dbPlugin);
-
-  // Проверяем, что JWT плагин зарегистрирован (после await)
-  if (!fastify.jwt) {
-    console.error('ERROR: JWT plugin not registered!');
-    console.error('Fastify keys after registration:', Object.keys(fastify).slice(0, 20));
-    throw new Error('JWT plugin registration failed');
-  }
-  console.log('JWT plugin registered successfully');
 
   // Глобальный хук для добавления CORS заголовков ко всем ответам (резервный)
   fastify.addHook('onSend', async (request, reply) => {
@@ -51,18 +34,15 @@ async function buildServer() {
     reply.header('Access-Control-Expose-Headers', 'Content-Type, Authorization');
   });
 
-  // Сохраняем fastify instance глобально для доступа в контроллерах
-  (fastify as any).globalInstance = fastify;
-
   // Routes
   await fastify.register(publicRoutes);
   await fastify.register(authRoutes);
   await fastify.register(ownerRoutes);
   await fastify.register(adminRoutes);
 
-  // Health check
-  fastify.get('/health', async () => {
-    return { status: 'ok' };
+  // Register shutdown handler
+  registerShutdownHandler(async () => {
+    await fastify.close();
   });
 
   return fastify;
@@ -75,7 +55,7 @@ async function start() {
     server.log.info(`Server listening on http://${env.host}:${env.port}`);
     server.log.info(`Swagger UI available at http://${env.host}:${env.port}/docs`);
   } catch (error) {
-    console.error(error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }

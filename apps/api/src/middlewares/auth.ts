@@ -1,4 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { verifyAccessToken } from '../services/token.service.js';
+import { UnauthorizedError } from '../utils/errors.js';
+import { handleError } from '../utils/errors.js';
 
 export interface AuthUser {
   id: string;
@@ -15,15 +18,24 @@ declare module 'fastify' {
 export async function authMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
-) {
+): Promise<void> {
+  const authHeader = request.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new UnauthorizedError('Missing or invalid authorization header');
+  }
+  
+  const token = authHeader.substring(7);
+  
   try {
-    await request.jwtVerify();
-    // После jwtVerify, данные уже в request.user
-    if (!request.user) {
-      return reply.code(401).send({ error: 'Unauthorized' });
-    }
+    const payload = await verifyAccessToken(token);
+    request.user = {
+      id: payload.id,
+      role: payload.role,
+      email: payload.email,
+    };
   } catch (error) {
-    return reply.code(401).send({ error: 'Unauthorized' });
+    // Ошибка уже обработана в verifyAccessToken как UnauthorizedError
+    throw error;
   }
 }
-

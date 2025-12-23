@@ -8,6 +8,7 @@ import {
 } from '../services/leads.service.js';
 import { createLeadSchema, updateLeadStatusSchema } from '../utils/validate.js';
 import { handleError } from '../utils/errors.js';
+import { sendSuccess } from '../utils/response.js';
 
 export async function listLeads(
   request: FastifyRequest<{ Querystring: LeadFilters }>,
@@ -15,7 +16,7 @@ export async function listLeads(
 ) {
   try {
     const result = await getLeads(request.query);
-    return reply.send(result);
+    return sendSuccess(reply, result);
   } catch (error) {
     return handleError(error, reply);
   }
@@ -27,20 +28,20 @@ export async function getLead(
 ) {
   try {
     const lead = await getLeadById(request.params.id);
-    return reply.send(lead);
+    return sendSuccess(reply, lead);
   } catch (error) {
     return handleError(error, reply);
   }
 }
 
 export async function createLeadHandler(
-  request: FastifyRequest<{ Body: any }>,
+  request: FastifyRequest<{ Body: unknown }>,
   reply: FastifyReply
 ) {
   try {
     const data = createLeadSchema.parse(request.body);
     const lead = await createLead(data);
-    return reply.code(201).send(lead);
+    return sendSuccess(reply, lead, 201);
   } catch (error) {
     return handleError(error, reply);
   }
@@ -53,7 +54,7 @@ export async function updateLeadStatusHandler(
   try {
     const data = updateLeadStatusSchema.parse(request.body);
     const lead = await updateLeadStatus(request.params.id, data.status);
-    return reply.send(lead);
+    return sendSuccess(reply, lead);
   } catch (error) {
     return handleError(error, reply);
   }

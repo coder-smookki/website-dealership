@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../../api/auth';
 import { useAuthStore } from '../../store/authStore';
+import { sanitizeText } from '../../utils/sanitize';
 import './OwnerRegister.css';
 
 export default function OwnerRegister() {
@@ -44,15 +45,16 @@ export default function OwnerRegister() {
 
     try {
       const response = await authApi.register({
-        email: formData.email,
+        email: sanitizeText(formData.email),
         password: formData.password,
-        name: formData.name,
-        phone: formData.phone,
+        name: sanitizeText(formData.name),
+        phone: sanitizeText(formData.phone),
       });
-      setAuth(response.user, response.token);
+      setAuth(response.user, response.accessToken, response.refreshToken);
       navigate('/account/cars');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Ошибка регистрации');
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || 'Ошибка регистрации');
     } finally {
       setLoading(false);
     }

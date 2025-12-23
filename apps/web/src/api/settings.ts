@@ -1,15 +1,7 @@
 import http from './http';
+import type { Settings } from '../types/settings';
 
-export interface Settings {
-  _id: string;
-  phone: string;
-  email: string;
-  address: string;
-  workHours: string;
-  slogan: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type { Settings };
 
 export const settingsApi = {
   getSettings: (): Promise<Settings> => {
@@ -20,4 +12,3 @@ export const settingsApi = {
     return http.put('/api/admin/settings', data).then((res) => res.data);
   },
 };
-

@@ -1,25 +1,26 @@
 import { z } from 'zod';
 
+// Упрощенные схемы валидации - только базовые проверки
 export const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(1),
 });
 
 export const registerSchema = z.object({
-  email: z.string().email('Некорректный email'),
-  password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
-  name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  phone: z.string().min(10, 'Некорректный номер телефона'),
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(1),
+  phone: z.string().min(1),
 });
 
 export const createCarSchema = z.object({
   title: z.string().min(1),
   brand: z.string().min(1),
   model: z.string().min(1),
-  year: z.number().int().min(1900).max(new Date().getFullYear() + 1),
+  year: z.number().int().min(1900),
   mileage: z.number().min(0),
   price: z.number().min(0),
-  currency: z.string().default('RUB'),
+  currency: z.string().optional(),
   fuelType: z.string().min(1),
   transmission: z.string().min(1),
   drive: z.string().min(1),
@@ -27,16 +28,16 @@ export const createCarSchema = z.object({
   powerHp: z.number().min(0),
   color: z.string().min(1),
   description: z.string().min(1),
-  features: z.array(z.string()).default([]),
-  images: z.array(z.string()).default([]),
-  status: z.enum(['available', 'reserved', 'sold']).default('available'),
-  ownerId: z.string().regex(/^[0-9a-fA-F]{24}$/),
+  features: z.array(z.string()).optional(),
+  images: z.array(z.string()).optional(),
+  status: z.enum(['available', 'reserved', 'sold']).optional(),
+  ownerId: z.string().min(1),
 });
 
 export const updateCarSchema = createCarSchema.partial();
 
 export const createLeadSchema = z.object({
-  carId: z.string().regex(/^[0-9a-fA-F]{24}$/),
+  carId: z.string().min(1),
   name: z.string().min(1),
   phone: z.string().min(1),
   email: z.string().email().optional(),
@@ -48,7 +49,7 @@ export const createUserSchema = z.object({
   password: z.string().min(6),
   name: z.string().optional(),
   phone: z.string().optional(),
-  role: z.enum(['admin', 'owner']).default('owner'),
+  role: z.enum(['admin', 'owner']).optional(),
 });
 
 export const updateUserSchema = z.object({
@@ -72,4 +73,3 @@ export const updateStatusSchema = z.object({
 export const updateLeadStatusSchema = z.object({
   status: z.enum(['new', 'in_progress', 'closed']),
 });
-

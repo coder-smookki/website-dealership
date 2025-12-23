@@ -89,6 +89,12 @@ export default function CarDetails() {
   // Клавиатурная навигация
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      if (showForm && e.key === 'Escape') {
+        e.preventDefault();
+        setShowForm(false);
+        return;
+      }
+      
       if (isZoomed) {
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
@@ -109,7 +115,7 @@ export default function CarDetails() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isZoomed, prevImage, nextImage]);
+  }, [isZoomed, showForm, prevImage, nextImage]);
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ' + currency;
@@ -287,21 +293,39 @@ export default function CarDetails() {
             {car.status === 'available' && (
               <button 
                 className="contact-button"
-                onClick={() => setShowForm(!showForm)}
+                onClick={() => setShowForm(true)}
               >
                 Связаться с нами
               </button>
             )}
-
-            {showForm && (
-              <LeadForm
-                onSubmit={handleLeadSubmit}
-                onCancel={() => setShowForm(false)}
-              />
-            )}
           </div>
         </div>
       </div>
+
+      {/* Модальное окно для формы связи */}
+      {showForm && (
+        <div 
+          className="modal-overlay"
+          onClick={() => setShowForm(false)}
+        >
+          <div 
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className="modal-close"
+              onClick={() => setShowForm(false)}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+            <LeadForm
+              onSubmit={handleLeadSubmit}
+              onCancel={() => setShowForm(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Модальное окно для зума */}
       {isZoomed && (

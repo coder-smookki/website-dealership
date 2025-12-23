@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../api/auth';
 import { useAuthStore } from '../../store/authStore';
+import { sanitizeText } from '../../utils/sanitize';
 import './AdminLogin.css';
 
 export default function AdminLogin() {
@@ -18,15 +19,17 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await authApi.login(email, password);
+      const sanitizedEmail = sanitizeText(email);
+      const response = await authApi.login(sanitizedEmail, password);
       if (response.user.role !== 'admin') {
         setError('Доступ только для администраторов');
         return;
       }
-      setAuth(response.user, response.token);
+      setAuth(response.user, response.accessToken, response.refreshToken);
       navigate('/admin');
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.error || err.message || 'Ошибка входа. Проверьте, что API сервер запущен.';
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      const errorMessage = error.message || 'Ошибка входа. Проверьте, что API сервер запущен.';
       setError(errorMessage);
       console.error('Login error:', err);
     } finally {

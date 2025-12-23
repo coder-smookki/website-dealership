@@ -1,7 +1,21 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-# Устанавливаем curl для health check и tsx для запуска TypeScript
-RUN apk add --no-cache curl
+WORKDIR /app
+
+# Копируем package.json файлы
+COPY apps/api/package*.json ./
+
+# Устанавливаем зависимости
+RUN npm ci
+
+# Копируем исходный код и конфигурацию
+COPY apps/api/src ./src
+COPY apps/api/tsconfig.json ./tsconfig.json
+
+# Собираем TypeScript
+RUN npm run build
+
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -12,12 +26,11 @@ RUN addgroup -g 1001 -S nodejs && \
 # Копируем package.json файлы
 COPY apps/api/package*.json ./
 
-# Устанавливаем все зависимости (включая tsx для запуска TS)
-RUN npm install && npm cache clean --force
+# Устанавливаем только production зависимости
+RUN npm ci --only=production && npm cache clean --force
 
-# Копируем исходный код
-COPY apps/api/src ./src
-COPY apps/api/tsconfig.json ./tsconfig.json
+# Копируем собранные файлы из builder
+COPY --from=builder /app/dist ./dist
 
 # Меняем владельца файлов
 RUN chown -R nodejs:nodejs /app
@@ -26,10 +39,6 @@ USER nodejs
 # Открываем порт
 EXPOSE 3001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3001/health || exit 1
-
-# Запускаем приложение с tsx (без сборки)
-CMD ["npx", "tsx", "src/server.ts"]
+# Запускаем собранное приложение
+CMD ["node", "dist/server.js"]
 

@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { login, register, me } from '../controllers/auth.controller.js';
+import { login, register, me, refresh, logout } from '../controllers/auth.controller.js';
 import { authMiddleware } from '../middlewares/auth.js';
 
 export async function authRoutes(fastify: FastifyInstance) {
@@ -37,6 +37,32 @@ export async function authRoutes(fastify: FastifyInstance) {
     },
   }, login);
 
+  // Обновление токена
+  fastify.post('/api/auth/refresh', {
+    schema: {
+      tags: ['Auth'],
+      description: 'Refresh access token',
+      body: {
+        type: 'object',
+        required: ['refreshToken'],
+        properties: {
+          refreshToken: { type: 'string' },
+        },
+      },
+    },
+  }, refresh);
+
+  // Выход
+  fastify.post('/api/auth/logout', {
+    schema: {
+      tags: ['Auth'],
+      description: 'Logout',
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [authMiddleware],
+  }, logout);
+
+  // Текущий пользователь
   fastify.get('/api/auth/me', {
     schema: {
       tags: ['Auth'],

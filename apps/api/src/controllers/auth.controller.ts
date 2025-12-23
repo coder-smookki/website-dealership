@@ -1,87 +1,121 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { Types } from 'mongoose';
 import { loginUser, createUser } from '../services/auth.service.js';
+import { refreshAccessToken, revokeRefreshToken, generateTokenPair } from '../services/token.service.js';
 import { loginSchema, registerSchema } from '../utils/validate.js';
-import { handleError } from '../utils/errors.js';
+import { handleError, ValidationError, UnauthorizedError, NotFoundError } from '../utils/errors.js';
+import { sendSuccess } from '../utils/response.js';
 import { User } from '../models/User.js';
+import { AuthUser } from '../middlewares/auth.js';
+
+interface LoginBody {
+  email: string;
+  password: string;
+}
+
+interface RegisterBody {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+}
+
+interface RefreshBody {
+  refreshToken: string;
+}
 
 export async function login(
-  request: FastifyRequest<{ Body: { email: string; password: string } }>,
+  request: FastifyRequest<{ Body: LoginBody }>,
   reply: FastifyReply
-) {
+): Promise<FastifyReply> {
   try {
-    const data = loginSchema.parse(request.body);
-    const user = await loginUser(data.email, data.password);
-    
-    // Используем request.server - это корневой fastify instance с зарегистрированными плагинами
-    const fastify = request.server as any;
-    
-    // Проверяем доступность JWT
-    if (!fastify) {
-      console.error('Fastify server instance not found');
-      throw new Error('Server configuration error');
+    const validated = loginSchema.safeParse(request.body);
+    if (!validated.success) {
+      throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
     }
     
-    // В @fastify/jwt версии 7.x, jwt доступен через fastify.jwt
-    if (!fastify.jwt) {
-      console.error('JWT plugin not found in server instance');
-      console.error('Server keys:', Object.keys(fastify).slice(0, 20));
-      throw new Error('JWT plugin not registered');
-    }
+    const result = await loginUser(validated.data.email, validated.data.password);
     
-    // Используем fastify.jwt.sign() - правильный способ для @fastify/jwt 7.x
-    const token = fastify.jwt.sign({
-      id: user.id,
-      role: user.role,
-      email: user.email,
-    });
-
-    return reply.send({
-      token,
-      user,
+    return sendSuccess(reply, {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+      user: result.user,
     });
   } catch (error) {
-    console.error('Login error:', error);
     return handleError(error, reply);
   }
 }
 
 export async function register(
-  request: FastifyRequest<{ Body: { email: string; password: string; name: string; phone: string } }>,
+  request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
-) {
+): Promise<FastifyReply> {
   try {
-    const data = registerSchema.parse(request.body);
-    
-    // Создаем пользователя с ролью owner
-    const user = await createUser(
-      data.email.toLowerCase().trim(),
-      data.password,
-      'owner',
-      data.name,
-      data.phone
-    );
-    
-    // Используем request.server для доступа к JWT
-    const fastify = request.server as any;
-    
-    if (!fastify || !fastify.jwt) {
-      console.error('JWT plugin not available');
-      throw new Error('Server configuration error');
+    const validated = registerSchema.safeParse(request.body);
+    if (!validated.success) {
+      throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
     }
     
-    // Создаем JWT токен
-    const token = fastify.jwt.sign({
+    const user = await createUser(
+      validated.data.email.toLowerCase().trim(),
+      validated.data.password,
+      'owner',
+      validated.data.name,
+      validated.data.phone
+    );
+    
+    const tokenPair = await generateTokenPair({
       id: user.id,
       role: user.role,
       email: user.email,
     });
-
-    return reply.code(201).send({
-      token,
+    
+    return sendSuccess(reply, {
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
       user,
+    }, 201);
+  } catch (error) {
+    return handleError(error, reply);
+  }
+}
+
+export async function refresh(
+  request: FastifyRequest<{ Body: RefreshBody }>,
+  reply: FastifyReply
+): Promise<FastifyReply> {
+  try {
+    const { refreshToken } = request.body;
+    
+    if (!refreshToken || typeof refreshToken !== 'string') {
+      throw new ValidationError('Refresh token is required');
+    }
+    
+    const tokenPair = await refreshAccessToken(refreshToken);
+    
+    return sendSuccess(reply, {
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
     });
   } catch (error) {
-    console.error('Register error:', error);
+    return handleError(error, reply);
+  }
+}
+
+export async function logout(
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<FastifyReply> {
+  try {
+    const user = request.user as AuthUser | undefined;
+    if (!user) {
+      throw new UnauthorizedError('User not authenticated');
+    }
+    
+    await revokeRefreshToken(user.id);
+    
+    return sendSuccess(reply, { success: true });
+  } catch (error) {
     return handleError(error, reply);
   }
 }
@@ -89,19 +123,26 @@ export async function register(
 export async function me(
   request: FastifyRequest,
   reply: FastifyReply
-) {
+): Promise<FastifyReply> {
   try {
-    const user = request.user;
+    const user = request.user as AuthUser | undefined;
     if (!user) {
-      return reply.code(401).send({ error: 'Unauthorized' });
+      throw new UnauthorizedError('User not authenticated');
     }
 
-    const dbUser = await User.findById(user.id).select('-passwordHash').lean();
+    if (!Types.ObjectId.isValid(user.id)) {
+      throw new ValidationError('Invalid user ID');
+    }
+
+    const dbUser = await User.findById(user.id)
+      .select('-passwordHash -refreshToken')
+      .lean();
+    
     if (!dbUser) {
-      return reply.code(404).send({ error: 'User not found' });
+      throw new NotFoundError('User');
     }
 
-    return reply.send({
+    return sendSuccess(reply, {
       id: dbUser._id.toString(),
       email: dbUser.email,
       role: dbUser.role,
@@ -112,4 +153,3 @@ export async function me(
     return handleError(error, reply);
   }
 }
-

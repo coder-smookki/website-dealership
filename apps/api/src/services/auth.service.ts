@@ -1,27 +1,57 @@
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
-import { AppError } from '../utils/errors.js';
+import { UnauthorizedError, ConflictError } from '../utils/errors.js';
+import { generateTokenPair } from './token.service.js';
 
-export async function loginUser(email: string, password: string) {
-  // Поиск без учета регистра
+export interface LoginResult {
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    id: string;
+    email: string;
+    role: 'admin' | 'owner';
+    name?: string;
+  };
+}
+
+export interface CreateUserResult {
+  id: string;
+  email: string;
+  role: 'admin' | 'owner';
+  name?: string;
+  phone?: string;
+}
+
+export async function loginUser(email: string, password: string): Promise<LoginResult> {
+  const normalizedEmail = email.toLowerCase().trim();
   const user = await User.findOne({ 
-    email: email.toLowerCase().trim(), 
+    email: normalizedEmail, 
     isActive: true 
-  });
+  }).select('+passwordHash');
+  
   if (!user) {
-    throw new AppError(401, 'Неверный email или пароль');
+    throw new UnauthorizedError('Неверный email или пароль');
   }
 
   const isValid = await bcrypt.compare(password, user.passwordHash);
   if (!isValid) {
-    throw new AppError(401, 'Неверный email или пароль');
+    throw new UnauthorizedError('Неверный email или пароль');
   }
 
-  return {
+  const tokenPair = await generateTokenPair({
     id: user._id.toString(),
-    email: user.email,
     role: user.role,
-    name: user.name,
+    email: user.email,
+  });
+
+  return {
+    ...tokenPair,
+    user: {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role,
+      name: user.name,
+    },
   };
 }
 
@@ -31,21 +61,24 @@ export async function createUser(
   role: 'admin' | 'owner',
   name?: string,
   phone?: string
-) {
-  const existing = await User.findOne({ email });
+): Promise<CreateUserResult> {
+  const normalizedEmail = email.toLowerCase().trim();
+  const existing = await User.findOne({ email: normalizedEmail });
   if (existing) {
-    throw new AppError(409, 'User already exists');
+    throw new ConflictError('User already exists');
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
+  
   const user = await User.create({
-    email,
+    email: normalizedEmail,
     passwordHash,
     role,
     name,
     phone,
+    isActive: true,
   });
-
+  
   return {
     id: user._id.toString(),
     email: user.email,
@@ -54,4 +87,3 @@ export async function createUser(
     phone: user.phone,
   };
 }
-

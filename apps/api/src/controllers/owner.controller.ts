@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { getCars, getCarById, updateCarStatus, createCar, CarFilters } from '../services/cars.service.js';
 import { updateStatusSchema, createCarSchema } from '../utils/validate.js';
 import { handleError } from '../utils/errors.js';
+import { sendSuccess } from '../utils/response.js';
 import { AuthUser } from '../middlewares/auth.js';
 
 export async function listMyCars(
@@ -15,7 +16,7 @@ export async function listMyCars(
       ownerId: user.id,
     };
     const result = await getCars(filters);
-    return reply.send(result);
+    return sendSuccess(reply, result);
   } catch (error) {
     return handleError(error, reply);
   }
@@ -26,9 +27,8 @@ export async function getMyCar(
   reply: FastifyReply
 ) {
   try {
-    // Владелец может видеть свои объявления независимо от статуса модерации
     const car = await getCarById(request.params.id, true);
-    return reply.send(car);
+    return sendSuccess(reply, car);
   } catch (error) {
     return handleError(error, reply);
   }
@@ -41,26 +41,25 @@ export async function updateMyCarStatus(
   try {
     const data = updateStatusSchema.parse(request.body);
     const car = await updateCarStatus(request.params.id, data.status);
-    return reply.send(car);
+    return sendSuccess(reply, car);
   } catch (error) {
     return handleError(error, reply);
   }
 }
 
 export async function createMyCar(
-  request: FastifyRequest<{ Body: any }>,
+  request: FastifyRequest<{ Body: unknown }>,
   reply: FastifyReply
 ) {
   try {
     const user = request.user as AuthUser;
     const data = createCarSchema.parse(request.body);
-    // Устанавливаем ownerId на текущего пользователя
     const car = await createCar(
       { ...data, ownerId: user.id },
       user.id,
       user.role
     );
-    return reply.code(201).send(car);
+    return sendSuccess(reply, car, 201);
   } catch (error) {
     return handleError(error, reply);
   }

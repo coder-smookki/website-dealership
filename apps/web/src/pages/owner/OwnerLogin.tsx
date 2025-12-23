@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../../api/auth';
 import { useAuthStore } from '../../store/authStore';
+import { sanitizeText } from '../../utils/sanitize';
 import './OwnerLogin.css';
 
 export default function OwnerLogin() {
@@ -18,11 +19,13 @@ export default function OwnerLogin() {
     setLoading(true);
 
     try {
-      const response = await authApi.login(email, password);
-      setAuth(response.user, response.token);
+      const sanitizedEmail = sanitizeText(email);
+      const response = await authApi.login(sanitizedEmail, password);
+      setAuth(response.user, response.accessToken, response.refreshToken);
       navigate('/account/cars');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Ошибка входа');
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || 'Ошибка входа');
     } finally {
       setLoading(false);
     }
