@@ -7,17 +7,10 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: car-shop
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-changeme}
     volumes:
       - mongodb_data:/data/db
     networks:
       - car-shop-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/car-shop -u ${MONGO_ROOT_USERNAME:-admin} -p ${MONGO_ROOT_PASSWORD:-changeme} --authenticationDatabase admin --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   api:
     build:
@@ -31,22 +24,19 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       API_PORT: 3001
       API_HOST: 0.0.0.0
-      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-changeme}@mongodb:27017/car-shop?authSource=admin
+      MONGODB_URI: mongodb://mongodb:27017/car-shop
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-secret-key-change-in-production-access-token-min-32-chars}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-secret-key-change-in-production-refresh-token-min-32-chars}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
-      JWT_EXPIRES_IN: 7d
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
       TUNNEL_URL: ${TUNNEL_URL:-}
     depends_on:
-      mongodb:
-        condition: service_healthy
+      - mongodb
     networks:
       - car-shop-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   web:
     build:
@@ -59,16 +49,9 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      api:
-        condition: service_healthy
+      - api
     networks:
       - car-shop-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
 
 volumes:
   mongodb_data:

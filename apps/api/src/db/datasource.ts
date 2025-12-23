@@ -31,24 +31,24 @@ export class MongoDataSource implements IDataSource {
     const options: MongoClientOptions = {
       maxPoolSize: 10,
       minPoolSize: 1,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       connectTimeoutMS: 10000,
     };
 
     this.connectionPromise = (async () => {
-      this.client = new MongoClient(env.mongodbUri, options);
-      await this.client.connect();
-      this.db = this.client.db();
-    })()
-      .catch((err) => {
+      try {
+        this.client = new MongoClient(env.mongodbUri, options);
+        await this.client.connect();
+        this.db = this.client.db();
+      } catch (err) {
         this.client = null;
         this.db = null;
         throw err;
-      })
-      .finally(() => {
+      } finally {
         this.connectionPromise = null;
-      });
+      }
+    })();
 
     return this.connectionPromise;
   }

@@ -45,7 +45,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, healthCheck);
+  }, healthCheck as any);
 
   // Readiness probe - готовность принимать трафик
   fastify.get('/ready', {
@@ -53,7 +53,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
       tags: ['Health'],
       description: 'Readiness probe - checks if service can accept traffic',
     },
-  }, readinessCheck);
+  }, readinessCheck as any);
 
   // Liveness probe - жив ли процесс
   fastify.get('/live', {
@@ -61,6 +61,6 @@ export async function healthRoutes(fastify: FastifyInstance) {
       tags: ['Health'],
       description: 'Liveness probe - checks if process is alive',
     },
-  }, livenessCheck);
+  }, livenessCheck as any);
 }
 

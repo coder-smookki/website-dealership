@@ -15,8 +15,6 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache wget
-
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
