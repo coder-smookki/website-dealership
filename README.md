@@ -242,24 +242,33 @@ npm install
 Создайте файл `.env` в корне проекта:
 
 ```env
-NODE_ENV=development
+# Node Environment
+NODE_ENV=production
+
+# API Configuration
 API_PORT=3001
 API_HOST=0.0.0.0
 
-# MongoDB локальное подключение (БЕЗ аутентификации)
-MONGODB_URI=mongodb://localhost:27017/car-shop
+# MongoDB Configuration
+MONGODB_URI=mongodb://admin:changeme123@mongodb:27017/car-shop?authSource=admin
+MONGO_ROOT_USERNAME=admin
+MONGO_ROOT_PASSWORD=changeme123
 
 # JWT Configuration
-JWT_ACCESS_SECRET=dev-access-secret-key-change-in-production
-JWT_REFRESH_SECRET=dev-refresh-secret-key-change-in-production
+# ВАЖНО: В production используйте криптографически стойкие ключи (32+ символов)
+# Сгенерируйте новые ключи: openssl rand -base64 32
+JWT_ACCESS_SECRET=your-super-secret-access-token-change-in-production-min-32-chars
+JWT_REFRESH_SECRET=your-super-secret-refresh-token-change-in-production-min-32-chars
 JWT_ACCESS_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 
-# CORS
+# CORS Configuration
 CORS_ORIGIN=http://localhost:3000
 
-# Frontend
-VITE_API_URL=http://localhost:3001
+# Frontend Build
+# Оставьте пустым для production (будет использовать относительные пути через nginx proxy)
+# Для разработки укажите: http://localhost:3001
+VITE_API_URL=
 ```
 
 ### 4. Инициализируйте базу данных
