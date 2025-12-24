@@ -6,7 +6,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-20+-green?style=for-the-badge&logo=node.js)
 ![React](https://img.shields.io/badge/React-18.3-blue?style=for-the-badge&logo=react)
 ![MongoDB](https://img.shields.io/badge/MongoDB-7.0-green?style=for-the-badge&logo=mongodb)
-![Fastify](https://img.shields.io/badge/Fastify-4.28-black?style=for-the-badge&logo=fastify)
+![Fastify](https://img.shields.io/badge/Fastify-5.6-black?style=for-the-badge&logo=fastify)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue?style=for-the-badge&logo=docker)
 
 **Production-Ready платформа для управления автосалоном премиум-класса**
@@ -41,28 +41,31 @@
 
 - ✅ **Система модерации** — автоматическая модерация объявлений владельцев
 - ✅ **Ролевая модель** — разделение прав доступа (admin, owner)
-- ✅ **Управление статусами** — отслеживание статусов продажи
+- ✅ **Управление статусами** — отслеживание статусов продажи (available, reserved, sold)
 - ✅ **Продвинутая фильтрация** — поиск по множеству параметров
-- ✅ **JWT Authentication** — Access Token (15m) + Refresh Token (7d)
+- ✅ **JWT Authentication** — Access Token (15m) + Refresh Token (7d), только ID в токене
+- ✅ **Строгая типизация** — TypeScript + Zod схемы, без `any` и `unknown`
 - ✅ **XSS защита** — санитизация пользовательского ввода
-- ✅ **Rate Limiting** — защита от перегрузки (100 req/min)
-- ✅ **Health Checks** — liveness/readiness проверки для K8s
+- ✅ **Rate Limiting** — защита от перегрузки
 - ✅ **Clean Architecture** — строгое разделение Domain/Application/Infrastructure
+- ✅ **MongoDB Native Driver** — без ORM, прямой контроль пула соединений
 
 ---
 
 ## ✨ Особенности
 
-### Backend (Fastify + MongoDB)
+### Backend (Fastify 5 + MongoDB)
 
 - 🏗️ **Clean Architecture** — Domain/Application/Infrastructure layers
-- 🔒 **Типизированная обработка ошибок** — без утечек, строгая типизация
-- 🗄️ **MongoDB Native Driver** — без ORM, прямой контроль пула
-- 🔐 **JWT с Refresh Tokens** — безопасная ротация токенов
+- 🔒 **Строгая типизация** — TypeScript + Zod схемы, без `any` и `unknown`
+- 🗄️ **MongoDB Native Driver** — без ORM, прямой контроль пула (10 max, 1 min)
+- 🔐 **JWT с Refresh Tokens** — только ID пользователя в токене, данные из БД
 - 📝 **Структурированное логирование** — Pino logger
-- 🛡️ **Security headers** — Helmet-like защита, CSP
+- 🛡️ **Security headers** — X-Frame-Options, CSP, HSTS, X-Content-Type-Options
 - 📊 **Денормализация** — ownerName/Email в документах для производительности
 - 🚫 **Без Mongoose** — MongoDB Driver для максимального контроля
+- ✅ **Fastify Type Provider Zod** — автоматическая валидация и типизация роутов
+- 🔄 **Graceful Shutdown** — корректное закрытие соединений
 
 ### Frontend (React + Vite)
 
@@ -72,14 +75,14 @@
 - 📱 **Адаптивность** — responsive дизайн
 - 🔄 **Автоматическое обновление токенов** — seamless refresh flow
 - 📦 **Четкое разделение** — types/, api/, components/, pages/
+- 🔐 **Типизированные API клиенты** — строгая типизация всех запросов
 
 ### Инфраструктура
 
 - 🐳 **Docker Compose** — полная контейнеризация
-- 🔐 **Безопасная БД** — credentials для MongoDB с authSource
 - 🚀 **Production ready** — multi-stage Docker образы
-- ⚡ **Nginx reverse proxy** — проксирование API
-- 📊 **Health checks** — мониторинг состояния сервисов
+- ⚡ **Nginx reverse proxy** — проксирование API запросов
+- 🔧 **MongoDB без авторизации** — упрощенная конфигурация для разработки
 
 ---
 
@@ -89,7 +92,6 @@
 
 - **Node.js** 20+
 - **npm** 9+
-- **MongoDB** 7.0+ (или Docker)
 - **Docker & Docker Compose** (для контейнеризации)
 
 ---
@@ -107,7 +109,7 @@ cd website-dealership
 
 ### 2. Создайте файл окружения
 
-Создайте файл `.env` в корне проекта (скопируйте из примера ниже):
+Создайте файл `.env` в корне проекта:
 
 ```env
 # Node Environment
@@ -117,13 +119,12 @@ NODE_ENV=production
 API_PORT=3001
 API_HOST=0.0.0.0
 
-# MongoDB Configuration (для Docker)
-MONGODB_URI=mongodb://admin:changeme123@mongodb:27017/car-shop?authSource=admin
-MONGO_ROOT_USERNAME=admin
-MONGO_ROOT_PASSWORD=changeme123
+# MongoDB Configuration (без авторизации)
+MONGODB_URI=mongodb://mongodb:27017/car-shop
 
 # JWT Configuration
 # ВАЖНО: В production используйте криптографически стойкие ключи (32+ символов)
+# Сгенерируйте новые ключи: openssl rand -base64 32
 JWT_ACCESS_SECRET=your-super-secret-access-token-change-in-production-min-32-chars
 JWT_REFRESH_SECRET=your-super-secret-refresh-token-change-in-production-min-32-chars
 JWT_ACCESS_EXPIRES_IN=15m
@@ -137,14 +138,13 @@ VITE_API_URL=
 ```
 
 **⚠️ ВАЖНО для Production:**
-- Смените `MONGO_ROOT_PASSWORD` на надёжный пароль
 - Смените `JWT_ACCESS_SECRET` и `JWT_REFRESH_SECRET` на случайные строки 32+ символов
 - Укажите ваш домен в `CORS_ORIGIN`
 
 ### 3. Запустите все сервисы
 
 ```bash
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 Это запустит:
@@ -173,7 +173,6 @@ exit
 - 🌐 **Frontend**: http://localhost:3000
 - 🔧 **API**: http://localhost:3001
 - 📚 **Swagger**: http://localhost:3001/docs
-- ❤️ **Health**: http://localhost:3001/health
 
 ### Управление Docker
 
@@ -243,20 +242,16 @@ npm install
 
 ```env
 # Node Environment
-NODE_ENV=production
+NODE_ENV=development
 
 # API Configuration
 API_PORT=3001
 API_HOST=0.0.0.0
 
-# MongoDB Configuration
-MONGODB_URI=mongodb://admin:changeme123@mongodb:27017/car-shop?authSource=admin
-MONGO_ROOT_USERNAME=admin
-MONGO_ROOT_PASSWORD=changeme123
+# MongoDB Configuration (локальная БД без авторизации)
+MONGODB_URI=mongodb://localhost:27017/car-shop
 
 # JWT Configuration
-# ВАЖНО: В production используйте криптографически стойкие ключи (32+ символов)
-# Сгенерируйте новые ключи: openssl rand -base64 32
 JWT_ACCESS_SECRET=your-super-secret-access-token-change-in-production-min-32-chars
 JWT_REFRESH_SECRET=your-super-secret-refresh-token-change-in-production-min-32-chars
 JWT_ACCESS_EXPIRES_IN=15m
@@ -265,10 +260,8 @@ JWT_REFRESH_EXPIRES_IN=7d
 # CORS Configuration
 CORS_ORIGIN=http://localhost:3000
 
-# Frontend Build
-# Оставьте пустым для production (будет использовать относительные пути через nginx proxy)
-# Для разработки укажите: http://localhost:3001
-VITE_API_URL=
+# Frontend Build (для разработки)
+VITE_API_URL=http://localhost:3001
 ```
 
 ### 4. Инициализируйте базу данных
@@ -332,13 +325,17 @@ npm run preview
 
 | Технология | Версия | Назначение |
 |------------|--------|------------|
-| **Fastify** | 4.28 | Высокопроизводительный веб-фреймворк |
+| **Fastify** | 5.6 | Высокопроизводительный веб-фреймворк |
 | **MongoDB Driver** | 6.10 | Нативный драйвер без ORM |
 | **TypeScript** | 5.6 | Строгая типизация |
 | **JWT** | 9.0 | Access + Refresh токены |
-| **Zod** | 3.23 | Валидация схем |
+| **Zod** | 4.2 | Валидация схем |
+| **fastify-type-provider-zod** | 6.1 | Интеграция Zod с Fastify |
 | **Pino** | 9.4 | Структурированное логирование |
 | **bcryptjs** | 2.4 | Хеширование паролей |
+| **@fastify/cors** | 11.2 | CORS поддержка |
+| **@fastify/swagger** | 9.6 | API документация |
+| **@fastify/swagger-ui** | 5.2 | Swagger UI |
 
 ### Frontend
 
@@ -362,15 +359,15 @@ npm run preview
 ┌─────────────────────────────────────────────────┐
 │         Presentation Layer (HTTP)                │
 │  • Controllers (только обработка HTTP)           │
-│  • Routes (маршрутизация)                        │
-│  • Middlewares (auth, validation)                │
-│  • Plugins (CORS, Security, Logger, Swagger)     │
+│  • Routes (маршрутизация с Zod схемами)         │
+│  • Middlewares (auth, requireRole)              │
+│  • Plugins (CORS, Security, Logger, Swagger)    │
 └──────────────────┬──────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────┐
 │         Application Layer (Business Logic)        │
 │  • Services (auth, cars, leads, users...)        │
-│  • Token Service (JWT управление)                │
+│  • Token Service (JWT управление)               │
 └──────────────────┬──────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────┐
@@ -383,9 +380,9 @@ npm run preview
                    │
 ┌──────────────────▼──────────────────────────────┐
 │       Infrastructure Layer (Data Access)         │
-│  • MongoDataSource (Singleton pattern)           │
+│  • MongoDataSource (Singleton pattern)          │
 │  • Database Client (connection pool)             │
-│  • Collections (typed collections)               │
+│  • Collections (typed collections)                │
 │  • Shutdown Manager (graceful shutdown)          │
 └─────────────────────────────────────────────────┘
 ```
@@ -395,10 +392,12 @@ npm run preview
 1. **MongoDB Native Driver вместо Mongoose** — прямой контроль, нет ORM overhead
 2. **Денормализация** — ownerName/Email в документах автомобилей
 3. **Singleton для БД** — единственное подключение с пулом (10 max, 1 min)
-4. **JWT Library** — jsonwebtoken напрямую, без @fastify/jwt
+4. **JWT Library** — jsonwebtoken напрямую, только ID в токене
 5. **Global Error Handler** — централизованная обработка, контроллеры без try/catch
 6. **Domain-Driven Design** — чёткое разделение слоёв
 7. **Security by Design** — rate limiting, headers, CORS, XSS защита
+8. **Строгая типизация** — Zod схемы для всех роутов, TypeScript без `any`/`unknown`
+9. **Fastify Type Provider Zod** — автоматическая валидация и типизация
 
 ---
 
@@ -408,14 +407,6 @@ npm run preview
 
 Интерактивная документация доступна по адресу:
 - **http://localhost:3001/docs**
-
-### Health Endpoints
-
-| Endpoint | Описание |
-|----------|----------|
-| `GET /health` | Полная проверка (БД, память, uptime) |
-| `GET /ready` | Readiness probe для K8s |
-| `GET /live` | Liveness probe для K8s |
 
 ### Основные эндпойнты
 
@@ -443,6 +434,7 @@ npm run preview
 | Метод | Путь | Описание |
 |-------|------|----------|
 | `GET` | `/api/my/cars` | Мои объявления |
+| `GET` | `/api/my/cars/:id` | Детали моего объявления |
 | `POST` | `/api/my/cars` | Создать (pending) |
 | `PATCH` | `/api/my/cars/:id/status` | Изменить статус |
 
@@ -451,14 +443,20 @@ npm run preview
 | Метод | Путь | Описание |
 |-------|------|----------|
 | `GET` | `/api/admin/cars` | Все объявления |
+| `GET` | `/api/admin/cars/:id` | Детали объявления |
 | `POST` | `/api/admin/cars` | Создать (approved) |
 | `PATCH` | `/api/admin/cars/:id` | Обновить |
 | `DELETE` | `/api/admin/cars/:id` | Удалить |
 | `PATCH` | `/api/admin/cars/:id/moderate` | Модерировать |
 | `GET` | `/api/admin/leads` | Все заявки |
-| `PATCH` | `/api/admin/leads/:id/status` | Изменить статус |
+| `GET` | `/api/admin/leads/:id` | Детали заявки |
+| `PATCH` | `/api/admin/leads/:id` | Изменить статус заявки |
 | `GET` | `/api/admin/users` | Все пользователи |
-| `PATCH` | `/api/admin/settings` | Обновить настройки |
+| `GET` | `/api/admin/users/:id` | Детали пользователя |
+| `POST` | `/api/admin/users` | Создать пользователя |
+| `PATCH` | `/api/admin/users/:id` | Обновить пользователя |
+| `GET` | `/api/admin/settings` | Настройки сайта |
+| `PUT` | `/api/admin/settings` | Обновить настройки |
 
 ### Response Format
 
@@ -481,6 +479,26 @@ npm run preview
 }
 ```
 
+### Query Parameters
+
+#### GET /api/cars
+
+| Параметр | Тип | Описание | Пример |
+|----------|-----|----------|--------|
+| `page` | number | Номер страницы | `1` |
+| `limit` | number | Количество на странице (max 1000) | `20` |
+| `q` | string | Поисковый запрос | `BMW` |
+| `brand` | string | Фильтр по бренду | `Mercedes-Benz` |
+| `yearFrom` | number | Год от | `2020` |
+| `yearTo` | number | Год до | `2024` |
+| `priceFrom` | number | Цена от | `1000000` |
+| `priceTo` | number | Цена до | `5000000` |
+| `fuelType` | string | Тип топлива | `Бензин` |
+| `transmission` | string | КПП | `Автомат` |
+| `drive` | string | Привод | `Полный` |
+| `status` | string | Статус | `available`, `reserved`, `sold` |
+| `sort` | string | Сортировка | `priceAsc`, `priceDesc`, `yearDesc` |
+
 ---
 
 ## 📁 Структура проекта
@@ -497,14 +515,15 @@ website-dealership/
 │   │   │   ├── config/              # env.ts
 │   │   │   ├── controllers/         # HTTP handlers
 │   │   │   ├── services/            # Business logic
+│   │   │   ├── schemas/             # Zod схемы для валидации
 │   │   │   ├── db/                  # Infrastructure layer
 │   │   │   │   ├── datasource.ts   # Singleton MongoDB client
 │   │   │   │   ├── client.ts       # Database connection
 │   │   │   │   └── collections.ts  # Typed collections
 │   │   │   ├── middlewares/        # auth, requireRole
-│   │   │   ├── routes/             # public, auth, owner, admin, health
+│   │   │   ├── routes/             # public, auth, owner, admin
 │   │   │   ├── plugins/            # cors, security, logger, swagger
-│   │   │   ├── utils/              # errors, response, validate
+│   │   │   ├── utils/              # errors, response
 │   │   │   ├── scripts/            # createAdmin, seed
 │   │   │   ├── shutdown.ts         # Graceful shutdown
 │   │   │   └── server.ts           # Entry point
@@ -525,7 +544,7 @@ website-dealership/
 │       └── vite.config.ts
 │
 ├── docker-compose.yml               # 3 services: mongodb, api, web
-├── .env.example                     # Environment template
+├── .env                             # Environment variables
 ├── package.json                     # Root workspace
 └── README.md
 ```
@@ -538,23 +557,26 @@ website-dealership/
 
 | Мера | Описание |
 |------|----------|
-| **JWT Authentication** | Access Token (15m) + Refresh Token (7d) в БД |
+| **JWT Authentication** | Access Token (15m) + Refresh Token (7d) в БД, только ID в токене |
 | **XSS Protection** | DOMPurify для всех пользовательских данных |
-| **Rate Limiting** | 100 запросов/минуту на IP+URL |
+| **Rate Limiting** | Защита от перегрузки |
 | **Security Headers** | X-Frame-Options, CSP, HSTS, X-Content-Type-Options |
 | **Input Validation** | Zod схемы для всех входных данных |
 | **Error Handling** | Типизированные ошибки без утечки информации |
 | **CORS** | Настраиваемые origins |
 | **Password Hashing** | bcryptjs с salt rounds 10 |
-| **DB Credentials** | authSource=admin для MongoDB |
+| **Строгая типизация** | TypeScript без `any` и `unknown` |
 
 ### Token Flow
 
 ```
-Login → Access (15m) + Refresh (7d) → Store in DB
+Login → Access (15m, только ID) + Refresh (7d, только ID) → Store refresh in DB
 Access expires → Send refresh → New token pair
 Logout → Revoke refresh from DB
+Каждый запрос → Проверка токена → Получение данных пользователя из БД
 ```
+
+**Важно:** В JWT токене хранится только ID пользователя. Данные пользователя (role, email) получаются из БД при каждом запросе, что предотвращает подмену данных.
 
 ---
 
@@ -570,24 +592,18 @@ docker-compose ps mongodb
 docker-compose logs mongodb
 
 # Проверьте URI в .env
-MONGODB_URI=mongodb://admin:changeme123@mongodb:27017/car-shop?authSource=admin
+MONGODB_URI=mongodb://mongodb:27017/car-shop
 ```
 
-### API возвращает 503 Service Unavailable
+### API возвращает ошибки валидации
 
-```bash
-# Проверьте health endpoint
-curl http://localhost:3001/health
-
-# Если БД не подключена, перезапустите API
-docker-compose restart api
-```
+Проверьте что все запросы соответствуют Zod схемам. Смотрите Swagger UI по адресу http://localhost:3001/docs для актуальных схем.
 
 ### Frontend не может подключиться к API
 
 Проверьте:
 1. API запущен на порту 3001
-2. В `.env` правильный `VITE_API_URL`
+2. В `.env` правильный `VITE_API_URL` (пусто для production, `http://localhost:3001` для dev)
 3. Nginx проксирует запросы (если используется Docker)
 
 ```bash
@@ -619,6 +635,15 @@ curl -X POST http://localhost:3001/api/auth/login \
   -d '{"email":"admin@example.com","password":"admin123"}'
 
 # Должен вернуть accessToken и refreshToken
+```
+
+### Ошибки совместимости плагинов Fastify
+
+Если видите ошибку `FST_ERR_PLUGIN_VERSION_MISMATCH`, убедитесь что все плагины обновлены до версий, совместимых с Fastify 5:
+
+```bash
+cd apps/api
+npm install @fastify/cors@latest @fastify/formbody@latest @fastify/swagger@latest @fastify/swagger-ui@latest
 ```
 
 ---
@@ -669,6 +694,23 @@ npm run seed:clear       # Очистить и заполнить заново
 
 **Регистрация:** `/account/register`  
 **Вход:** `/account/login`
+
+---
+
+## 🔧 Типизация и валидация
+
+### Backend
+
+- **Zod схемы** — все роуты используют Zod для валидации
+- **Fastify Type Provider Zod** — автоматическая типизация запросов и ответов
+- **Строгая типизация** — без `any` и `unknown` в критических местах
+- **MongoDB типы** — `Filter<T>` и `UpdateFilter<T>` вместо `Record<string, unknown>`
+
+### Frontend
+
+- **TypeScript интерфейсы** — строгая типизация всех данных
+- **Типизированные API клиенты** — автоматический вывод типов из ответов
+- **DOMPurify** — санитизация всех пользовательских данных
 
 ---
 

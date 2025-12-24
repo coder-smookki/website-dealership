@@ -87,7 +87,7 @@ function mapCarToResponse(car: CarDocument): CarResponse {
 export async function getCars(filters: CarFilters = {}) {
   const {
     page = 1,
-    limit = 20,
+    limit: rawLimit = 20,
     q,
     brand,
     yearFrom,
@@ -103,6 +103,8 @@ export async function getCars(filters: CarFilters = {}) {
     ownerId,
     createdBy,
   } = filters;
+
+  const limit = Math.min(rawLimit, 1000);
 
   const db = getDatabase();
   const carsCollection = getCarsCollection(db);

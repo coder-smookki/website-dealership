@@ -7,7 +7,7 @@ export const userRoleSchema = z.enum(['admin', 'owner']);
 
 export const carFiltersQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  limit: z.coerce.number().int().positive().max(1000).optional(),
   q: z.string().optional(),
   brand: z.string().optional(),
   yearFrom: z.coerce.number().int().optional(),
@@ -118,7 +118,7 @@ export const updateSettingsBodySchema = z.object({
 
 export const myCarsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(100).optional(),
+  limit: z.coerce.number().int().positive().max(1000).optional(),
   status: carStatusSchema.optional(),
   sort: z.string().optional(),
 });
