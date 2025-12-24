@@ -1,49 +1,43 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { ObjectId } from 'mongodb';
 import { loginUser, createUser } from '../services/auth.service.js';
 import { refreshAccessToken, revokeRefreshToken, generateTokenPair } from '../services/token.service.js';
-import { loginSchema, registerSchema } from '../utils/validate.js';
-import { ValidationError, UnauthorizedError, NotFoundError } from '../utils/errors.js';
+import { UnauthorizedError, NotFoundError } from '../utils/errors.js';
 import { sendSuccess } from '../utils/response.js';
 import { getDatabase } from '../db/client.js';
 import { getUsersCollection } from '../db/collections.js';
-import { AuthUser } from '../middlewares/auth.js';
+import {
+  loginBodySchema,
+  registerBodySchema,
+  refreshTokenBodySchema,
+} from '../schemas/index.js';
+import type { z } from 'zod';
+
+type LoginBody = z.infer<typeof loginBodySchema>;
+type RegisterBody = z.infer<typeof registerBodySchema>;
+type RefreshTokenBody = z.infer<typeof refreshTokenBodySchema>;
 
 export async function login(
-  request: FastifyRequest<{ Body: { email: string; password: string } }>,
+  request: FastifyRequest<{ Body: LoginBody }>,
   reply: FastifyReply
 ): Promise<FastifyReply> {
-  const validated = loginSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  
-  const result = await loginUser(validated.data.email, validated.data.password);
+  const result = await loginUser(request.body.email, request.body.password);
   return sendSuccess(reply, result);
 }
 
 export async function register(
-  request: FastifyRequest<{ Body: { email: string; password: string; name: string; phone: string } }>,
+  request: FastifyRequest<{ Body: RegisterBody }>,
   reply: FastifyReply
 ): Promise<FastifyReply> {
-  const validated = registerSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  
   const user = await createUser(
-    validated.data.email,
-    validated.data.password,
+    request.body.email,
+    request.body.password,
     'owner',
-    validated.data.name,
-    validated.data.phone
+    request.body.name,
+    request.body.phone
   );
   
-  const tokenPair = await generateTokenPair({
-    id: user.id,
-    role: user.role,
-    email: user.email,
-  });
+  const tokenPair = await generateTokenPair(user.id);
   
   return sendSuccess(reply, {
     accessToken: tokenPair.accessToken,
@@ -53,16 +47,10 @@ export async function register(
 }
 
 export async function refresh(
-  request: FastifyRequest<{ Body: { refreshToken: string } }>,
+  request: FastifyRequest<{ Body: RefreshTokenBody }>,
   reply: FastifyReply
 ): Promise<FastifyReply> {
-  const { refreshToken } = request.body;
-  
-  if (!refreshToken || typeof refreshToken !== 'string') {
-    throw new ValidationError('Refresh token is required');
-  }
-  
-  const tokenPair = await refreshAccessToken(refreshToken);
+  const tokenPair = await refreshAccessToken(request.body.refreshToken);
   return sendSuccess(reply, tokenPair);
 }
 
@@ -70,7 +58,7 @@ export async function logout(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<FastifyReply> {
-  const user = request.user as AuthUser | undefined;
+  const user = request.user;
   if (!user) {
     throw new UnauthorizedError('User not authenticated');
   }
@@ -83,13 +71,13 @@ export async function me(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<FastifyReply> {
-  const user = request.user as AuthUser | undefined;
+  const user = request.user;
   if (!user) {
     throw new UnauthorizedError('User not authenticated');
   }
 
   if (!ObjectId.isValid(user.id)) {
-    throw new ValidationError('Invalid user ID');
+    throw new Error('Invalid user ID');
   }
 
   const db = getDatabase();

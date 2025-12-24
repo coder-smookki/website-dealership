@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, type Filter, type UpdateFilter } from 'mongodb';
 import { getDatabase } from '../db/client.js';
 import { getCarsCollection, getUsersCollection, CarDocument } from '../db/collections.js';
 import { ValidationError, NotFoundError } from '../utils/errors.js';
@@ -107,9 +107,11 @@ export async function getCars(filters: CarFilters = {}) {
   const db = getDatabase();
   const carsCollection = getCarsCollection(db);
 
-  const query: Record<string, unknown> = {};
+  const query: Filter<CarDocument> = {};
 
-  if (status) query.status = status;
+  if (status) {
+    query.status = status;
+  }
 
   if (moderationStatus !== undefined) {
     query.moderationStatus = moderationStatus;
@@ -125,23 +127,39 @@ export async function getCars(filters: CarFilters = {}) {
     ];
   }
 
-  if (brand) query.brand = { $regex: new RegExp(`^${brand}$`, 'i') };
+  if (brand) {
+    query.brand = { $regex: new RegExp(`^${brand}$`, 'i') };
+  }
 
   if (yearFrom || yearTo) {
     query.year = {};
-    if (yearFrom) (query.year as Record<string, unknown>).$gte = yearFrom;
-    if (yearTo) (query.year as Record<string, unknown>).$lte = yearTo;
+    if (yearFrom) {
+      query.year.$gte = yearFrom;
+    }
+    if (yearTo) {
+      query.year.$lte = yearTo;
+    }
   }
 
   if (priceFrom || priceTo) {
     query.price = {};
-    if (priceFrom) (query.price as Record<string, unknown>).$gte = priceFrom;
-    if (priceTo) (query.price as Record<string, unknown>).$lte = priceTo;
+    if (priceFrom) {
+      query.price.$gte = priceFrom;
+    }
+    if (priceTo) {
+      query.price.$lte = priceTo;
+    }
   }
 
-  if (fuelType) query.fuelType = fuelType;
-  if (transmission) query.transmission = transmission;
-  if (drive) query.drive = drive;
+  if (fuelType) {
+    query.fuelType = fuelType;
+  }
+  if (transmission) {
+    query.transmission = transmission;
+  }
+  if (drive) {
+    query.drive = drive;
+  }
 
   if (ownerId) {
     if (!ObjectId.isValid(ownerId)) throw new ValidationError('Invalid owner ID');
@@ -280,24 +298,32 @@ export async function updateCar(
   const carsCollection = getCarsCollection(db);
   const usersCollection = getUsersCollection(db);
   
-  const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
-  delete updateData.ownerId;
+  const { ownerId: dataOwnerId, ...restData } = data;
   
-  if (data.ownerId) {
-    if (!ObjectId.isValid(data.ownerId)) throw new ValidationError('Invalid owner ID');
+  const setData: Partial<CarDocument> = {
+    ...restData,
+    updatedAt: new Date(),
+  };
+  
+  if (dataOwnerId) {
+    if (!ObjectId.isValid(dataOwnerId)) throw new ValidationError('Invalid owner ID');
     
-    const owner = await usersCollection.findOne({ _id: new ObjectId(data.ownerId) });
+    const owner = await usersCollection.findOne({ _id: new ObjectId(dataOwnerId) });
     if (!owner) throw new NotFoundError('Owner');
     
-    updateData.ownerId = new ObjectId(data.ownerId);
-    updateData.ownerName = owner.name;
-    updateData.ownerEmail = owner.email;
-    updateData.ownerPhone = owner.phone;
+    setData.ownerId = new ObjectId(dataOwnerId);
+    setData.ownerName = owner.name;
+    setData.ownerEmail = owner.email;
+    setData.ownerPhone = owner.phone;
   }
+  
+  const updateData: UpdateFilter<CarDocument> = {
+    $set: setData,
+  };
   
   const result = await carsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: updateData },
+    updateData,
     { returnDocument: 'after' }
   );
   
@@ -347,16 +373,17 @@ export async function moderateCar(
   const db = getDatabase();
   const carsCollection = getCarsCollection(db);
   
-  const updateData: Record<string, unknown> = {
-    moderationStatus,
-    updatedAt: new Date(),
+  const updateData: UpdateFilter<CarDocument> = {
+    $set: {
+      moderationStatus,
+      updatedAt: new Date(),
+      ...(moderationComment && { moderationComment }),
+    },
   };
-  
-  if (moderationComment) updateData.moderationComment = moderationComment;
   
   const result = await carsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: updateData },
+    updateData,
     { returnDocument: 'after' }
   );
   

@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import {
   getCars,
   getCarById,
@@ -7,15 +7,27 @@ import {
   deleteCar,
   updateCarStatus,
   moderateCar,
-  CarFilters,
 } from '../services/cars.service.js';
-import { createCarSchema, updateCarSchema, updateStatusSchema } from '../utils/validate.js';
-import { ValidationError } from '../utils/errors.js';
 import { sendSuccess } from '../utils/response.js';
-import { AuthUser } from '../middlewares/auth.js';
+import {
+  carFiltersQuerySchema,
+  carParamsSchema,
+  createCarBodySchema,
+  updateCarBodySchema,
+  moderateCarBodySchema,
+  updateCarStatusBodySchema,
+} from '../schemas/index.js';
+import type { z } from 'zod';
+
+type CarFiltersQuery = z.infer<typeof carFiltersQuerySchema>;
+type CarParams = z.infer<typeof carParamsSchema>;
+type CreateCarBody = z.infer<typeof createCarBodySchema>;
+type UpdateCarBody = z.infer<typeof updateCarBodySchema>;
+type ModerateCarBody = z.infer<typeof moderateCarBodySchema>;
+type UpdateCarStatusBody = z.infer<typeof updateCarStatusBodySchema>;
 
 export async function listCars(
-  request: FastifyRequest<{ Querystring: CarFilters }>,
+  request: FastifyRequest<{ Querystring: CarFiltersQuery }>,
   reply: FastifyReply
 ) {
   const result = await getCars(request.query);
@@ -23,42 +35,37 @@ export async function listCars(
 }
 
 export async function getCar(
-  request: FastifyRequest<{ Params: { id: string } }>,
+  request: FastifyRequest<{ Params: CarParams }>,
   reply: FastifyReply
 ) {
-  const user = request.user as AuthUser | undefined;
+  const user = request.user;
   const includePending = user?.role === 'admin';
   const car = await getCarById(request.params.id, includePending);
   return sendSuccess(reply, car);
 }
 
 export async function createCarHandler(
-  request: FastifyRequest<{ Body: unknown }>,
+  request: FastifyRequest<{ Body: CreateCarBody }>,
   reply: FastifyReply
 ) {
-  const user = request.user as AuthUser;
-  const validated = createCarSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
+  const user = request.user;
+  if (!user) {
+    throw new Error('User not authenticated');
   }
-  const car = await createCar(validated.data, user.id, user.role);
+  const car = await createCar(request.body, user.id, user.role);
   return sendSuccess(reply, car, 201);
 }
 
 export async function updateCarHandler(
-  request: FastifyRequest<{ Params: { id: string }; Body: unknown }>,
+  request: FastifyRequest<{ Params: CarParams; Body: UpdateCarBody }>,
   reply: FastifyReply
 ) {
-  const validated = updateCarSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  const car = await updateCar(request.params.id, validated.data);
+  const car = await updateCar(request.params.id, request.body);
   return sendSuccess(reply, car);
 }
 
 export async function deleteCarHandler(
-  request: FastifyRequest<{ Params: { id: string } }>,
+  request: FastifyRequest<{ Params: CarParams }>,
   reply: FastifyReply
 ) {
   await deleteCar(request.params.id);
@@ -66,25 +73,15 @@ export async function deleteCarHandler(
 }
 
 export async function updateCarStatusHandler(
-  request: FastifyRequest<{ Params: { id: string }; Body: { status: 'available' | 'reserved' | 'sold' } }>,
+  request: FastifyRequest<{ Params: CarParams; Body: UpdateCarStatusBody }>,
   reply: FastifyReply
 ) {
-  const validated = updateStatusSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  const car = await updateCarStatus(request.params.id, validated.data.status);
+  const car = await updateCarStatus(request.params.id, request.body.status);
   return sendSuccess(reply, car);
 }
 
 export async function moderateCarHandler(
-  request: FastifyRequest<{ 
-    Params: { id: string }; 
-    Body: { 
-      moderationStatus: 'approved' | 'rejected';
-      moderationComment?: string;
-    } 
-  }>,
+  request: FastifyRequest<{ Params: CarParams; Body: ModerateCarBody }>,
   reply: FastifyReply
 ) {
   const { moderationStatus, moderationComment } = request.body;

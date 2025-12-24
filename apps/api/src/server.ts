@@ -1,11 +1,12 @@
 import Fastify from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 import { env } from './config/env.js';
 import { dbPlugin } from './plugins/db.js';
 import { loggerPlugin } from './plugins/logger.js';
 import { corsPlugin } from './plugins/cors.js';
 import { swaggerPlugin } from './plugins/swagger.js';
 import { securityPlugin } from './plugins/security.js';
-import { healthRoutes } from './routes/health.routes.js';
 import { publicRoutes } from './routes/public.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { ownerRoutes } from './routes/owner.routes.js';
@@ -19,6 +20,9 @@ async function buildServer() {
   const fastify = Fastify({
     logger: false,
   });
+
+  fastify.setValidatorCompiler(validatorCompiler);
+  fastify.setSerializerCompiler(serializerCompiler);
 
   await fastify.register(loggerPlugin);
   await fastify.register(corsPlugin);
@@ -77,7 +81,6 @@ async function buildServer() {
     return handleError(error, reply, request, fastify);
   });
 
-  await fastify.register(healthRoutes);
   await fastify.register(publicRoutes);
   await fastify.register(authRoutes);
   await fastify.register(ownerRoutes);
@@ -87,7 +90,7 @@ async function buildServer() {
     await fastify.close();
   });
 
-  return fastify;
+  return fastify.withTypeProvider<ZodTypeProvider>();
 }
 
 async function start() {

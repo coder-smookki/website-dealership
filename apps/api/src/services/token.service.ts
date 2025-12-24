@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { type SignOptions } from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 import { env } from '../config/env.js';
 import { getDatabase } from '../db/client.js';
@@ -7,8 +7,6 @@ import { UnauthorizedError, NotFoundError } from '../utils/errors.js';
 
 export interface TokenPayload {
   id: string;
-  role: 'admin' | 'owner';
-  email: string;
 }
 
 export interface TokenPair {
@@ -18,34 +16,32 @@ export interface TokenPair {
 
 interface JwtPayload {
   id: string;
-  role?: 'admin' | 'owner';
-  email?: string;
   iat?: number;
   exp?: number;
 }
 
-export async function generateTokenPair(payload: TokenPayload): Promise<TokenPair> {
+export async function generateTokenPair(userId: string): Promise<TokenPair> {
   const accessToken = jwt.sign(
-    payload,
+    { id: userId },
     env.jwtAccessSecret,
-    { expiresIn: env.jwtAccessExpiresIn } as any
+    { expiresIn: env.jwtAccessExpiresIn } as SignOptions
   );
 
   const refreshToken = jwt.sign(
-    { id: payload.id },
+    { id: userId },
     env.jwtRefreshSecret,
-    { expiresIn: env.jwtRefreshExpiresIn } as any
+    { expiresIn: env.jwtRefreshExpiresIn } as SignOptions
   );
 
   const db = getDatabase();
   const usersCollection = getUsersCollection(db);
   
-  if (!ObjectId.isValid(payload.id)) {
+  if (!ObjectId.isValid(userId)) {
     throw new Error('Invalid user ID');
   }
   
   await usersCollection.updateOne(
-    { _id: new ObjectId(payload.id) },
+    { _id: new ObjectId(userId) },
     { $set: { refreshToken, updatedAt: new Date() } }
   );
 
@@ -55,14 +51,12 @@ export async function generateTokenPair(payload: TokenPayload): Promise<TokenPai
 export async function verifyAccessToken(token: string): Promise<TokenPayload> {
   const decoded = jwt.verify(token, env.jwtAccessSecret) as JwtPayload;
   
-  if (!decoded.id || !decoded.role || !decoded.email) {
+  if (!decoded.id || !ObjectId.isValid(decoded.id)) {
     throw new UnauthorizedError('Invalid token payload');
   }
   
   return {
     id: decoded.id,
-    role: decoded.role,
-    email: decoded.email,
   };
 }
 
@@ -84,13 +78,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<TokenPai
     throw new UnauthorizedError('Invalid refresh token');
   }
 
-  const payload: TokenPayload = {
-    id: user._id.toString(),
-    role: user.role,
-    email: user.email,
-  };
-
-  return generateTokenPair(payload);
+  return generateTokenPair(user._id.toString());
 }
 
 export async function revokeRefreshToken(userId: string): Promise<void> {

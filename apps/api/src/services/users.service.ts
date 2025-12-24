@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, type Filter, type UpdateFilter } from 'mongodb';
 import { getDatabase } from '../db/client.js';
 import { getUsersCollection, UserDocument } from '../db/collections.js';
 import { ValidationError, NotFoundError } from '../utils/errors.js';
@@ -31,9 +31,13 @@ export async function getUsers(filters: { role?: 'admin' | 'owner'; isActive?: b
   const db = getDatabase();
   const usersCollection = getUsersCollection(db);
   
-  const query: Record<string, unknown> = {};
-  if (filters.role) query.role = filters.role;
-  if (filters.isActive !== undefined) query.isActive = filters.isActive;
+  const query: Filter<UserDocument> = {};
+  if (filters.role) {
+    query.role = filters.role;
+  }
+  if (filters.isActive !== undefined) {
+    query.isActive = filters.isActive;
+  }
 
   const users = await usersCollection
     .find(query, { projection: { passwordHash: 0, refreshToken: 0 } })
@@ -67,14 +71,18 @@ export async function updateUser(
   const db = getDatabase();
   const usersCollection = getUsersCollection(db);
   
-  const updateData: Record<string, unknown> = { updatedAt: new Date() };
-  if (data.name !== undefined) updateData.name = data.name;
-  if (data.phone !== undefined) updateData.phone = data.phone;
-  if (data.isActive !== undefined) updateData.isActive = data.isActive;
+  const updateData: UpdateFilter<UserDocument> = {
+    $set: {
+      updatedAt: new Date(),
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.phone !== undefined && { phone: data.phone }),
+      ...(data.isActive !== undefined && { isActive: data.isActive }),
+    },
+  };
   
   const result = await usersCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: updateData },
+    updateData,
     { returnDocument: 'after', projection: { passwordHash: 0, refreshToken: 0 } }
   );
   

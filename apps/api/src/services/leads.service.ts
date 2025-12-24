@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, type Filter } from 'mongodb';
 import { getDatabase } from '../db/client.js';
 import { getLeadsCollection, getCarsCollection, LeadDocument } from '../db/collections.js';
 import { ValidationError, NotFoundError } from '../utils/errors.js';
@@ -73,9 +73,11 @@ export async function getLeads(filters: LeadFilters = {}) {
   const db = getDatabase();
   const leadsCollection = getLeadsCollection(db);
 
-  const query: Record<string, unknown> = {};
+  const query: Filter<LeadDocument> = {};
 
-  if (status) query.status = status;
+  if (status) {
+    query.status = status;
+  }
 
   if (carId) {
     if (!ObjectId.isValid(carId)) throw new ValidationError('Invalid car ID');

@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import {
   getLeads,
   getLeadById,
@@ -6,9 +6,17 @@ import {
   updateLeadStatus,
   LeadFilters,
 } from '../services/leads.service.js';
-import { createLeadSchema, updateLeadStatusSchema } from '../utils/validate.js';
-import { ValidationError } from '../utils/errors.js';
 import { sendSuccess } from '../utils/response.js';
+import {
+  leadParamsSchema,
+  createLeadBodySchema,
+  updateLeadStatusBodySchema,
+} from '../schemas/index.js';
+import type { z } from 'zod';
+
+type LeadParams = z.infer<typeof leadParamsSchema>;
+type CreateLeadBody = z.infer<typeof createLeadBodySchema>;
+type UpdateLeadStatusBody = z.infer<typeof updateLeadStatusBodySchema>;
 
 export async function listLeads(
   request: FastifyRequest<{ Querystring: LeadFilters }>,
@@ -19,7 +27,7 @@ export async function listLeads(
 }
 
 export async function getLead(
-  request: FastifyRequest<{ Params: { id: string } }>,
+  request: FastifyRequest<{ Params: LeadParams }>,
   reply: FastifyReply
 ) {
   const lead = await getLeadById(request.params.id);
@@ -27,25 +35,17 @@ export async function getLead(
 }
 
 export async function createLeadHandler(
-  request: FastifyRequest<{ Body: unknown }>,
+  request: FastifyRequest<{ Body: CreateLeadBody }>,
   reply: FastifyReply
 ) {
-  const validated = createLeadSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  const lead = await createLead(validated.data);
+  const lead = await createLead(request.body);
   return sendSuccess(reply, lead, 201);
 }
 
 export async function updateLeadStatusHandler(
-  request: FastifyRequest<{ Params: { id: string }; Body: { status: 'new' | 'in_progress' | 'closed' } }>,
+  request: FastifyRequest<{ Params: LeadParams; Body: UpdateLeadStatusBody }>,
   reply: FastifyReply
 ) {
-  const validated = updateLeadStatusSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  const lead = await updateLeadStatus(request.params.id, validated.data.status);
+  const lead = await updateLeadStatus(request.params.id, request.body.status);
   return sendSuccess(reply, lead);
 }

@@ -1,4 +1,5 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import {
   listCars,
   getCar,
@@ -24,192 +25,216 @@ import {
 } from '../controllers/settings.controller.js';
 import { authMiddleware } from '../middlewares/auth.js';
 import { requireAdmin } from '../middlewares/requireRole.js';
+import {
+  carFiltersQuerySchema,
+  carParamsSchema,
+  createCarBodySchema,
+  updateCarBodySchema,
+  moderateCarBodySchema,
+  leadParamsSchema,
+  updateLeadStatusBodySchema,
+  userParamsSchema,
+  createUserBodySchema,
+  updateUserBodySchema,
+  updateSettingsBodySchema,
+} from '../schemas/index.js';
 
 export async function adminRoutes(fastify: FastifyInstance) {
-  // Cars
-  fastify.get('/api/admin/cars', {
+  const app = fastify.withTypeProvider<ZodTypeProvider>();
+  app.route({
+    method: 'GET',
+    url: '/api/admin/cars',
     schema: {
       tags: ['Admin'],
       description: 'Get all cars',
       security: [{ bearerAuth: [] }],
+      querystring: carFiltersQuerySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, listCars as any);
+    handler: listCars,
+  });
 
-  fastify.get('/api/admin/cars/:id', {
+  app.route({
+    method: 'GET',
+    url: '/api/admin/cars/:id',
     schema: {
       tags: ['Admin'],
       description: 'Get car details',
       security: [{ bearerAuth: [] }],
+      params: carParamsSchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, getCar as any);
+    handler: getCar,
+  });
 
-  fastify.post('/api/admin/cars', {
+  app.route({
+    method: 'POST',
+    url: '/api/admin/cars',
     schema: {
       tags: ['Admin'],
       description: 'Create car',
       security: [{ bearerAuth: [] }],
-      body: {
-        type: 'object',
-        required: ['title', 'brand', 'model', 'year', 'mileage', 'price', 'ownerId'],
-        properties: {
-          title: { type: 'string' },
-          brand: { type: 'string' },
-          model: { type: 'string' },
-          year: { type: 'number' },
-          mileage: { type: 'number' },
-          price: { type: 'number' },
-          currency: { type: 'string' },
-          fuelType: { type: 'string' },
-          transmission: { type: 'string' },
-          drive: { type: 'string' },
-          engine: { type: 'string' },
-          powerHp: { type: 'number' },
-          color: { type: 'string' },
-          description: { type: 'string' },
-          features: { type: 'array', items: { type: 'string' } },
-          images: { type: 'array', items: { type: 'string' } },
-          status: { type: 'string', enum: ['available', 'reserved', 'sold'] },
-          ownerId: { type: 'string' },
-        },
-      },
+      body: createCarBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, createCarHandler as any);
+    handler: createCarHandler,
+  });
 
-  fastify.patch('/api/admin/cars/:id', {
+  app.route({
+    method: 'PATCH',
+    url: '/api/admin/cars/:id',
     schema: {
       tags: ['Admin'],
       description: 'Update car',
       security: [{ bearerAuth: [] }],
+      params: carParamsSchema,
+      body: updateCarBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, updateCarHandler as any);
+    handler: updateCarHandler,
+  });
 
-  fastify.delete('/api/admin/cars/:id', {
+  app.route({
+    method: 'DELETE',
+    url: '/api/admin/cars/:id',
     schema: {
       tags: ['Admin'],
       description: 'Delete car',
       security: [{ bearerAuth: [] }],
+      params: carParamsSchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, deleteCarHandler as any);
+    handler: deleteCarHandler,
+  });
 
-  fastify.patch('/api/admin/cars/:id/moderate', {
+  app.route({
+    method: 'PATCH',
+    url: '/api/admin/cars/:id/moderate',
     schema: {
       tags: ['Admin'],
       description: 'Moderate car (approve/reject)',
       security: [{ bearerAuth: [] }],
-      body: {
-        type: 'object',
-        required: ['moderationStatus'],
-        properties: {
-          moderationStatus: { type: 'string', enum: ['approved', 'rejected'] },
-          moderationComment: { type: 'string' },
-        },
-      },
+      params: carParamsSchema,
+      body: moderateCarBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, moderateCarHandler as any);
+    handler: moderateCarHandler,
+  });
 
-  fastify.get('/api/admin/leads', {
+  app.route({
+    method: 'GET',
+    url: '/api/admin/leads',
     schema: {
       tags: ['Admin'],
       description: 'Get all leads',
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, listLeads as any);
+    handler: listLeads,
+  });
 
-  fastify.get('/api/admin/leads/:id', {
+  app.route({
+    method: 'GET',
+    url: '/api/admin/leads/:id',
     schema: {
       tags: ['Admin'],
       description: 'Get lead details',
       security: [{ bearerAuth: [] }],
+      params: leadParamsSchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, getLead as any);
+    handler: getLead,
+  });
 
-  fastify.patch('/api/admin/leads/:id', {
+  app.route({
+    method: 'PATCH',
+    url: '/api/admin/leads/:id',
     schema: {
       tags: ['Admin'],
       description: 'Update lead status',
       security: [{ bearerAuth: [] }],
-      body: {
-        type: 'object',
-        required: ['status'],
-        properties: {
-          status: { type: 'string', enum: ['new', 'in_progress', 'closed'] },
-        },
-      },
+      params: leadParamsSchema,
+      body: updateLeadStatusBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, updateLeadStatusHandler as any);
+    handler: updateLeadStatusHandler,
+  });
 
-  fastify.get('/api/admin/settings', {
+  app.route({
+    method: 'GET',
+    url: '/api/admin/settings',
     schema: {
       tags: ['Admin'],
       description: 'Get settings',
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, getSettingsHandler as any);
+    handler: getSettingsHandler,
+  });
 
-  fastify.put('/api/admin/settings', {
+  app.route({
+    method: 'PUT',
+    url: '/api/admin/settings',
     schema: {
       tags: ['Admin'],
       description: 'Update settings',
       security: [{ bearerAuth: [] }],
+      body: updateSettingsBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, updateSettingsHandler as any);
+    handler: updateSettingsHandler,
+  });
 
-  fastify.get('/api/admin/users', {
+  app.route({
+    method: 'GET',
+    url: '/api/admin/users',
     schema: {
       tags: ['Admin'],
       description: 'Get all users',
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, listUsers as any);
+    handler: listUsers,
+  });
 
-  fastify.get('/api/admin/users/:id', {
+  app.route({
+    method: 'GET',
+    url: '/api/admin/users/:id',
     schema: {
       tags: ['Admin'],
       description: 'Get user details',
       security: [{ bearerAuth: [] }],
+      params: userParamsSchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, getUser as any);
+    handler: getUser,
+  });
 
-  fastify.post('/api/admin/users', {
+  app.route({
+    method: 'POST',
+    url: '/api/admin/users',
     schema: {
       tags: ['Admin'],
       description: 'Create user (owner)',
       security: [{ bearerAuth: [] }],
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: { type: 'string' },
-          password: { type: 'string' },
-          name: { type: 'string' },
-          phone: { type: 'string' },
-          role: { type: 'string', enum: ['admin', 'owner'] },
-        },
-      },
+      body: createUserBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, createUserHandler as any);
+    handler: createUserHandler,
+  });
 
-  fastify.patch('/api/admin/users/:id', {
+  app.route({
+    method: 'PATCH',
+    url: '/api/admin/users/:id',
     schema: {
       tags: ['Admin'],
       description: 'Update user',
       security: [{ bearerAuth: [] }],
+      params: userParamsSchema,
+      body: updateUserBodySchema,
     },
     preHandler: [authMiddleware, requireAdmin()],
-  }, updateUserHandler as any);
+    handler: updateUserHandler,
+  });
 }
 

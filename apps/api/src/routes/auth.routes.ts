@@ -1,75 +1,71 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { login, register, me, refresh, logout } from '../controllers/auth.controller.js';
 import { authMiddleware } from '../middlewares/auth.js';
+import {
+  registerBodySchema,
+  loginBodySchema,
+  refreshTokenBodySchema,
+} from '../schemas/index.js';
 
 export async function authRoutes(fastify: FastifyInstance) {
-  // Регистрация владельцев
-  fastify.post('/api/auth/register', {
+  const app = fastify.withTypeProvider<ZodTypeProvider>();
+
+  app.route({
+    method: 'POST',
+    url: '/api/auth/register',
     schema: {
       tags: ['Auth'],
       description: 'Register new owner',
-      body: {
-        type: 'object',
-        required: ['email', 'password', 'name', 'phone'],
-        properties: {
-          email: { type: 'string' },
-          password: { type: 'string' },
-          name: { type: 'string' },
-          phone: { type: 'string' },
-        },
-      },
+      body: registerBodySchema,
     },
-  }, register);
+    handler: register,
+  });
 
-  // Вход
-  fastify.post('/api/auth/login', {
+  app.route({
+    method: 'POST',
+    url: '/api/auth/login',
     schema: {
       tags: ['Auth'],
       description: 'Login',
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: { type: 'string' },
-          password: { type: 'string' },
-        },
-      },
+      body: loginBodySchema,
     },
-  }, login);
+    handler: login,
+  });
 
-  // Обновление токена
-  fastify.post('/api/auth/refresh', {
+  app.route({
+    method: 'POST',
+    url: '/api/auth/refresh',
     schema: {
       tags: ['Auth'],
       description: 'Refresh access token',
-      body: {
-        type: 'object',
-        required: ['refreshToken'],
-        properties: {
-          refreshToken: { type: 'string' },
-        },
-      },
+      body: refreshTokenBodySchema,
     },
-  }, refresh);
+    handler: refresh,
+  });
 
-  // Выход
-  fastify.post('/api/auth/logout', {
+  app.route({
+    method: 'POST',
+    url: '/api/auth/logout',
     schema: {
       tags: ['Auth'],
       description: 'Logout',
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware],
-  }, logout);
+    handler: logout,
+  });
 
-  // Текущий пользователь
-  fastify.get('/api/auth/me', {
+  app.route({
+    method: 'GET',
+    url: '/api/auth/me',
     schema: {
       tags: ['Auth'],
       description: 'Get current user',
       security: [{ bearerAuth: [] }],
     },
     preHandler: [authMiddleware],
-  }, me);
+    handler: me,
+  });
 }
 

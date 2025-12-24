@@ -1,8 +1,10 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { getSettings, updateSettings } from '../services/settings.service.js';
-import { updateSettingsSchema } from '../utils/validate.js';
-import { ValidationError } from '../utils/errors.js';
 import { sendSuccess } from '../utils/response.js';
+import { updateSettingsBodySchema } from '../schemas/index.js';
+import type { z } from 'zod';
+
+type UpdateSettingsBody = z.infer<typeof updateSettingsBodySchema>;
 
 export async function getSettingsHandler(
   request: FastifyRequest,
@@ -13,13 +15,9 @@ export async function getSettingsHandler(
 }
 
 export async function updateSettingsHandler(
-  request: FastifyRequest<{ Body: unknown }>,
+  request: FastifyRequest<{ Body: UpdateSettingsBody }>,
   reply: FastifyReply
 ) {
-  const validated = updateSettingsSchema.safeParse(request.body);
-  if (!validated.success) {
-    throw new ValidationError(validated.error.errors[0]?.message || 'Invalid input');
-  }
-  const settings = await updateSettings(validated.data);
+  const settings = await updateSettings(request.body);
   return sendSuccess(reply, settings);
 }

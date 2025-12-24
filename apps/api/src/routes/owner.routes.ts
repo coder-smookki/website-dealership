@@ -1,93 +1,69 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { listMyCars, getMyCar, updateMyCarStatus, createMyCar } from '../controllers/owner.controller.js';
 import { authMiddleware } from '../middlewares/auth.js';
 import { canAccessCar } from '../middlewares/canAccessCar.js';
+import {
+  createMyCarBodySchema,
+  myCarsQuerySchema,
+  myCarParamsSchema,
+  updateCarStatusBodySchema,
+} from '../schemas/index.js';
 
 export async function ownerRoutes(fastify: FastifyInstance) {
-  fastify.post('/api/my/cars', {
+  const app = fastify.withTypeProvider<ZodTypeProvider>();
+
+  app.route({
+    method: 'POST',
+    url: '/api/my/cars',
     schema: {
       tags: ['Owner'],
       description: 'Create car listing',
       security: [{ bearerAuth: [] }],
-      body: {
-        type: 'object',
-        required: ['title', 'brand', 'model', 'year', 'mileage', 'price'],
-        properties: {
-          title: { type: 'string' },
-          brand: { type: 'string' },
-          model: { type: 'string' },
-          year: { type: 'number' },
-          mileage: { type: 'number' },
-          price: { type: 'number' },
-          currency: { type: 'string' },
-          fuelType: { type: 'string' },
-          transmission: { type: 'string' },
-          drive: { type: 'string' },
-          engine: { type: 'string' },
-          powerHp: { type: 'number' },
-          color: { type: 'string' },
-          description: { type: 'string' },
-          features: { type: 'array', items: { type: 'string' } },
-          images: { type: 'array', items: { type: 'string' } },
-        },
-      },
+      body: createMyCarBodySchema,
     },
     preHandler: [authMiddleware],
-  }, createMyCar as any);
+    handler: createMyCar,
+  });
 
-  fastify.get('/api/my/cars', {
+  app.route({
+    method: 'GET',
+    url: '/api/my/cars',
     schema: {
       tags: ['Owner'],
       description: 'Get my cars',
       security: [{ bearerAuth: [] }],
-      querystring: {
-        type: 'object',
-        properties: {
-          page: { type: 'number' },
-          limit: { type: 'number' },
-          status: { type: 'string', enum: ['available', 'reserved', 'sold'] },
-          sort: { type: 'string' },
-        },
-      },
+      querystring: myCarsQuerySchema,
     },
     preHandler: [authMiddleware],
-  }, listMyCars as any);
+    handler: listMyCars,
+  });
 
-  fastify.get('/api/my/cars/:id', {
+  app.route({
+    method: 'GET',
+    url: '/api/my/cars/:id',
     schema: {
       tags: ['Owner'],
       description: 'Get my car details',
       security: [{ bearerAuth: [] }],
-      params: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-        },
-      },
+      params: myCarParamsSchema,
     },
-    preHandler: [authMiddleware, canAccessCar as any],
-  }, getMyCar as any);
+    preHandler: [authMiddleware, canAccessCar],
+    handler: getMyCar,
+  });
 
-  fastify.patch('/api/my/cars/:id/status', {
+  app.route({
+    method: 'PATCH',
+    url: '/api/my/cars/:id/status',
     schema: {
       tags: ['Owner'],
       description: 'Update car status',
       security: [{ bearerAuth: [] }],
-      params: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-        },
-      },
-      body: {
-        type: 'object',
-        required: ['status'],
-        properties: {
-          status: { type: 'string', enum: ['available', 'reserved', 'sold'] },
-        },
-      },
+      params: myCarParamsSchema,
+      body: updateCarStatusBodySchema,
     },
-    preHandler: [authMiddleware, canAccessCar as any],
-  }, updateMyCarStatus as any);
+    preHandler: [authMiddleware, canAccessCar],
+    handler: updateMyCarStatus,
+  });
 }
 

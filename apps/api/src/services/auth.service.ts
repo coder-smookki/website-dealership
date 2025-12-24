@@ -43,11 +43,7 @@ export async function loginUser(email: string, password: string): Promise<LoginR
     throw new UnauthorizedError('Неверный email или пароль');
   }
 
-  const tokenPair = await generateTokenPair({
-    id: user._id.toString(),
-    role: user.role,
-    email: user.email,
-  });
+  const tokenPair = await generateTokenPair(user._id.toString());
 
   return {
     ...tokenPair,

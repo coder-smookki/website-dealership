@@ -1,3 +1,4 @@
+import type { UpdateFilter } from 'mongodb';
 import { getDatabase } from '../db/client.js';
 import { getSettingsCollection, SettingsDocument } from '../db/collections.js';
 
@@ -62,7 +63,12 @@ export async function updateSettings(data: {
   
   let settings = await settingsCollection.findOne();
   
-  const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() };
+  const updateData: UpdateFilter<SettingsDocument> = {
+    $set: {
+      ...data,
+      updatedAt: new Date(),
+    },
+  };
   
   if (!settings) {
     const now = new Date();
@@ -81,7 +87,7 @@ export async function updateSettings(data: {
   } else {
     const result = await settingsCollection.findOneAndUpdate(
       {},
-      { $set: updateData },
+      updateData,
       { returnDocument: 'after' }
     );
     if (result) settings = result;
